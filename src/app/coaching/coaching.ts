@@ -149,7 +149,6 @@ export class Coaching {
     },
   ]);
 
-  // Modal state
   showAppointmentModal = signal(false);
   selectedPsychologistForBooking = signal<Psychologist | null>(null);
 
@@ -161,7 +160,6 @@ export class Coaching {
     this.selectedFilter.set(filter);
   }
 
-  // Open appointment modal
   openAppointmentModal(psychologist?: Psychologist) {
     if (psychologist) {
       this.selectedPsychologistForBooking.set(psychologist);
@@ -169,16 +167,13 @@ export class Coaching {
     this.showAppointmentModal.set(true);
   }
 
-  // Close appointment modal
   closeAppointmentModal() {
     this.showAppointmentModal.set(false);
     this.selectedPsychologistForBooking.set(null);
   }
 
-  // Handle appointment creation
   onAppointmentCreated(appointmentData: AppointmentData) {
     console.log('Appointment created:', appointmentData);
-    // Add to appointments list
     const newAppointment: Appointment = {
       id: this.appointments().length + 1,
       psychologist: appointmentData.psychologistName,
