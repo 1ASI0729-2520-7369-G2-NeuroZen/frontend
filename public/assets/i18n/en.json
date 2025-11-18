@@ -6,7 +6,14 @@
     "pricing": "Plans",
     "faq": "FAQ",
     "download": "Download",
-    "toggleNav": "Toggle navigation"
+    "toggleNav": "Toggle navigation",
+    "home": "Home",
+    "assessment": "Assessment",
+    "coaching": "Coaching",
+    "login": "Login",
+    "register": "Sign up",
+    "profileSettings": "Profile Settings",
+    "logout": "Logout"
   },
   "hero": {
     "badge": "New • Stress & Wellness",
@@ -435,6 +442,92 @@
         "sleep": "Sleep quality is affecting your stress. Establish a consistent sleep routine and create a relaxing bedtime environment.",
         "physical": "Physical symptoms are prominent. Incorporate regular exercise and relaxation techniques into your routine.",
         "emotional": "Emotional well-being needs attention. Consider mindfulness practices and connecting with supportive people."
+      }
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "submit": "Sign in",
+      "loading": "Loading...",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Sign up"
+    },
+    "register": {
+      "title": "Sign Up",
+      "name": "Name",
+      "namePlaceholder": "Enter your name",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Create a password",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Repeat your password",
+      "submit": "Sign up",
+      "loading": "Loading...",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Sign in"
+    }
+  },
+  "profile": {
+    "title": "Profile Settings",
+    "subtitle": "Manage your account settings and preferences",
+    "backToHome": "Back to Home",
+    "tabs": {
+      "profile": "Profile Information",
+      "password": "Password & Security",
+      "notifications": "Notifications"
+    },
+    "profileInfo": {
+      "title": "Profile Information",
+      "editProfile": "Edit Profile",
+      "fullName": "Full Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "phonePlaceholder": "+1 (555) 123-4567",
+      "district": "District/City",
+      "districtPlaceholder": "Enter your district",
+      "bio": "Bio",
+      "bioPlaceholder": "Tell us about yourself...",
+      "bioCounter": "characters",
+      "cancel": "Cancel",
+      "saveChanges": "Save Changes",
+      "required": "*"
+    },
+    "security": {
+      "title": "Password & Security",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "passwordHint": "Password must be at least 6 characters long",
+      "passwordMismatch": "Passwords do not match",
+      "changePassword": "Change Password",
+      "dangerZone": "Danger Zone",
+      "dangerZoneWarning": "Once you delete your account, there is no going back. Please be certain.",
+      "deleteAccount": "Delete Account"
+    },
+    "notifications": {
+      "title": "Notification Preferences",
+      "subtitle": "Choose how you want to receive notifications and updates",
+      "email": {
+        "title": "Email Notifications",
+        "description": "Receive notifications via email"
+      },
+      "sms": {
+        "title": "SMS Notifications",
+        "description": "Receive notifications via text message"
+      },
+      "weeklyReports": {
+        "title": "Weekly Progress Reports",
+        "description": "Get weekly summaries of your mental health progress"
+      },
+      "appointmentReminders": {
+        "title": "Appointment Reminders",
+        "description": "Receive reminders before scheduled appointments"
       }
     }
   }

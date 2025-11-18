@@ -6,14 +6,14 @@
         <div class="col-lg-8">
           <h1 class="display-5 fw-bold mb-2">
             <i class="fa-solid fa-user-gear me-3"></i>
-            Profile Settings
+            {{ 'profile.title' | translate }}
           </h1>
-          <p class="lead mb-0">Manage your account settings and preferences</p>
+          <p class="lead mb-0">{{ 'profile.subtitle' | translate }}</p>
         </div>
         <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
           <button class="btn btn-outline-light" routerLink="/home">
             <i class="fa-solid fa-arrow-left me-2"></i>
-            Back to Home
+            {{ 'profile.backToHome' | translate }}
           </button>
         </div>
       </div>
@@ -29,9 +29,7 @@
       {{ successMessage() }}
       <button type="button" class="btn-close" (click)="successMessage.set(null)"></button>
     </div>
-    }
-    
-    @if (errorMessage()) {
+    } @if (errorMessage()) {
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
       <i class="fa-solid fa-exclamation-circle me-2"></i>
       {{ errorMessage() }}
@@ -45,26 +43,29 @@
         <div class="card settings-nav">
           <div class="card-body p-0">
             <div class="list-group list-group-flush">
-              <button 
+              <button
                 class="list-group-item list-group-item-action"
                 [class.active]="activeTab() === 'profile'"
-                (click)="setActiveTab('profile')">
+                (click)="setActiveTab('profile')"
+              >
                 <i class="fa-solid fa-user me-2"></i>
-                Profile Information
+                {{ 'profile.tabs.profile' | translate }}
               </button>
-              <button 
+              <button
                 class="list-group-item list-group-item-action"
                 [class.active]="activeTab() === 'password'"
-                (click)="setActiveTab('password')">
+                (click)="setActiveTab('password')"
+              >
                 <i class="fa-solid fa-lock me-2"></i>
-                Password & Security
+                {{ 'profile.tabs.password' | translate }}
               </button>
-              <button 
+              <button
                 class="list-group-item list-group-item-action"
                 [class.active]="activeTab() === 'preferences'"
-                (click)="setActiveTab('preferences')">
+                (click)="setActiveTab('preferences')"
+              >
                 <i class="fa-solid fa-bell me-2"></i>
-                Notifications
+                {{ 'profile.tabs.notifications' | translate }}
               </button>
             </div>
           </div>
@@ -91,12 +92,12 @@
             <div class="d-flex justify-content-between align-items-center">
               <h4 class="mb-0">
                 <i class="fa-solid fa-user me-2"></i>
-                Profile Information
+                {{ 'profile.profileInfo.title' | translate }}
               </h4>
               @if (!isEditingProfile()) {
               <button class="btn btn-primary" (click)="toggleEditProfile()">
                 <i class="fa-solid fa-edit me-2"></i>
-                Edit Profile
+                {{ 'profile.profileInfo.editProfile' | translate }}
               </button>
               }
             </div>
@@ -105,83 +106,107 @@
             <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
               <div class="row">
                 <div class="col-md-6 mb-3">
-                  <label for="name" class="form-label">Full Name *</label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    id="name" 
+                  <label for="name" class="form-label"
+                    >{{ 'profile.profileInfo.fullName' | translate }}
+                    {{ 'profile.profileInfo.required' | translate }}</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="name"
                     formControlName="name"
-                    [class.is-invalid]="getFieldError(profileForm, 'name')">
+                    [class.is-invalid]="getFieldError(profileForm, 'name')"
+                  />
                   @if (getFieldError(profileForm, 'name')) {
                   <div class="invalid-feedback">{{ getFieldError(profileForm, 'name') }}</div>
                   }
                 </div>
 
                 <div class="col-md-6 mb-3">
-                  <label for="email" class="form-label">Email Address *</label>
-                  <input 
-                    type="email" 
-                    class="form-control" 
-                    id="email" 
+                  <label for="email" class="form-label"
+                    >{{ 'profile.profileInfo.email' | translate }}
+                    {{ 'profile.profileInfo.required' | translate }}</label
+                  >
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
                     formControlName="email"
-                    [class.is-invalid]="getFieldError(profileForm, 'email')">
+                    [class.is-invalid]="getFieldError(profileForm, 'email')"
+                  />
                   @if (getFieldError(profileForm, 'email')) {
                   <div class="invalid-feedback">{{ getFieldError(profileForm, 'email') }}</div>
                   }
                 </div>
 
                 <div class="col-md-6 mb-3">
-                  <label for="phone" class="form-label">Phone Number</label>
-                  <input 
-                    type="tel" 
-                    class="form-control" 
-                    id="phone" 
+                  <label for="phone" class="form-label">{{
+                    'profile.profileInfo.phone' | translate
+                  }}</label>
+                  <input
+                    type="tel"
+                    class="form-control"
+                    id="phone"
                     formControlName="phone"
-                    placeholder="+1 (555) 123-4567"
-                    [class.is-invalid]="getFieldError(profileForm, 'phone')">
+                    [placeholder]="'profile.profileInfo.phonePlaceholder' | translate"
+                    [class.is-invalid]="getFieldError(profileForm, 'phone')"
+                  />
                   @if (getFieldError(profileForm, 'phone')) {
                   <div class="invalid-feedback">{{ getFieldError(profileForm, 'phone') }}</div>
                   }
                 </div>
 
                 <div class="col-md-6 mb-3">
-                  <label for="district" class="form-label">District/City</label>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    id="district" 
+                  <label for="district" class="form-label">{{
+                    'profile.profileInfo.district' | translate
+                  }}</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="district"
                     formControlName="district"
-                    placeholder="Enter your district">
+                    [placeholder]="'profile.profileInfo.districtPlaceholder' | translate"
+                  />
                 </div>
 
                 <div class="col-12 mb-3">
-                  <label for="bio" class="form-label">Bio</label>
-                  <textarea 
-                    class="form-control" 
-                    id="bio" 
-                    formControlName="bio" 
+                  <label for="bio" class="form-label">{{
+                    'profile.profileInfo.bio' | translate
+                  }}</label>
+                  <textarea
+                    class="form-control"
+                    id="bio"
+                    formControlName="bio"
                     rows="4"
-                    placeholder="Tell us about yourself..."
-                    [class.is-invalid]="getFieldError(profileForm, 'bio')"></textarea>
+                    [placeholder]="'profile.profileInfo.bioPlaceholder' | translate"
+                    [class.is-invalid]="getFieldError(profileForm, 'bio')"
+                  ></textarea>
                   @if (getFieldError(profileForm, 'bio')) {
                   <div class="invalid-feedback">{{ getFieldError(profileForm, 'bio') }}</div>
                   }
-                  <small class="text-muted">{{ profileForm.get('bio')?.value?.length || 0 }}/500 characters</small>
+                  <small class="text-muted"
+                    >{{ profileForm.get('bio')?.value?.length || 0 }}/500
+                    {{ 'profile.profileInfo.bioCounter' | translate }}</small
+                  >
                 </div>
               </div>
 
               @if (isEditingProfile()) {
               <div class="d-flex gap-2 justify-content-end">
-                <button type="button" class="btn btn-outline-secondary" (click)="toggleEditProfile()">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  (click)="toggleEditProfile()"
+                >
                   <i class="fa-solid fa-times me-2"></i>
-                  Cancel
+                  {{ 'profile.profileInfo.cancel' | translate }}
                 </button>
                 <button type="submit" class="btn btn-primary" [disabled]="isSavingProfile()">
                   @if (isSavingProfile()) {
                   <span class="spinner-border spinner-border-sm me-2"></span>
                   }
                   <i class="fa-solid fa-save me-2"></i>
-                  Save Changes
+                  {{ 'profile.profileInfo.saveChanges' | translate }}
                 </button>
               </div>
               }
@@ -196,51 +221,70 @@
           <div class="card-header">
             <h4 class="mb-0">
               <i class="fa-solid fa-lock me-2"></i>
-              Password & Security
+              {{ 'profile.security.title' | translate }}
             </h4>
           </div>
           <div class="card-body">
             <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
               <div class="mb-3">
-                <label for="currentPassword" class="form-label">Current Password *</label>
-                <input 
-                  type="password" 
-                  class="form-control" 
-                  id="currentPassword" 
+                <label for="currentPassword" class="form-label"
+                  >{{ 'profile.security.currentPassword' | translate }}
+                  {{ 'profile.profileInfo.required' | translate }}</label
+                >
+                <input
+                  type="password"
+                  class="form-control"
+                  id="currentPassword"
                   formControlName="currentPassword"
-                  [class.is-invalid]="getFieldError(passwordForm, 'currentPassword')">
+                  [class.is-invalid]="getFieldError(passwordForm, 'currentPassword')"
+                />
                 @if (getFieldError(passwordForm, 'currentPassword')) {
-                <div class="invalid-feedback">{{ getFieldError(passwordForm, 'currentPassword') }}</div>
+                <div class="invalid-feedback">
+                  {{ getFieldError(passwordForm, 'currentPassword') }}
+                </div>
                 }
               </div>
 
               <div class="mb-3">
-                <label for="newPassword" class="form-label">New Password *</label>
-                <input 
-                  type="password" 
-                  class="form-control" 
-                  id="newPassword" 
+                <label for="newPassword" class="form-label"
+                  >{{ 'profile.security.newPassword' | translate }}
+                  {{ 'profile.profileInfo.required' | translate }}</label
+                >
+                <input
+                  type="password"
+                  class="form-control"
+                  id="newPassword"
                   formControlName="newPassword"
-                  [class.is-invalid]="getFieldError(passwordForm, 'newPassword')">
+                  [class.is-invalid]="getFieldError(passwordForm, 'newPassword')"
+                />
                 @if (getFieldError(passwordForm, 'newPassword')) {
                 <div class="invalid-feedback">{{ getFieldError(passwordForm, 'newPassword') }}</div>
                 }
-                <small class="text-muted">Password must be at least 6 characters long</small>
+                <small class="text-muted">{{ 'profile.security.passwordHint' | translate }}</small>
               </div>
 
               <div class="mb-4">
-                <label for="confirmPassword" class="form-label">Confirm New Password *</label>
-                <input 
-                  type="password" 
-                  class="form-control" 
-                  id="confirmPassword" 
+                <label for="confirmPassword" class="form-label"
+                  >{{ 'profile.security.confirmPassword' | translate }}
+                  {{ 'profile.profileInfo.required' | translate }}</label
+                >
+                <input
+                  type="password"
+                  class="form-control"
+                  id="confirmPassword"
                   formControlName="confirmPassword"
-                  [class.is-invalid]="getFieldError(passwordForm, 'confirmPassword') || getPasswordMismatchError()">
+                  [class.is-invalid]="
+                    getFieldError(passwordForm, 'confirmPassword') || getPasswordMismatchError()
+                  "
+                />
                 @if (getFieldError(passwordForm, 'confirmPassword')) {
-                <div class="invalid-feedback">{{ getFieldError(passwordForm, 'confirmPassword') }}</div>
-                }
-                @if (getPasswordMismatchError()) {
-                <div class="invalid-feedback">Passwords do not match</div>
+                <div class="invalid-feedback">
+                  {{ getFieldError(passwordForm, 'confirmPassword') }}
+                </div>
+                } @if (getPasswordMismatchError()) {
+                <div class="invalid-feedback">
+                  {{ 'profile.security.passwordMismatch' | translate }}
+                </div>
                 }
               </div>
 
@@ -250,23 +294,25 @@
                   <span class="spinner-border spinner-border-sm me-2"></span>
                   }
                   <i class="fa-solid fa-key me-2"></i>
-                  Change Password
+                  {{ 'profile.security.changePassword' | translate }}
                 </button>
               </div>
             </form>
 
-            <hr class="my-4">
+            <hr class="my-4" />
 
             <!-- Danger Zone -->
             <div class="danger-zone">
               <h5 class="text-danger mb-3">
                 <i class="fa-solid fa-exclamation-triangle me-2"></i>
-                Danger Zone
+                {{ 'profile.security.dangerZone' | translate }}
               </h5>
-              <p class="text-muted mb-3">Once you delete your account, there is no going back. Please be certain.</p>
+              <p class="text-muted mb-3">
+                {{ 'profile.security.dangerZoneWarning' | translate }}
+              </p>
               <button class="btn btn-outline-danger" (click)="deleteAccount()">
                 <i class="fa-solid fa-trash me-2"></i>
-                Delete Account
+                {{ 'profile.security.deleteAccount' | translate }}
               </button>
             </div>
           </div>
@@ -279,86 +325,102 @@
           <div class="card-header">
             <h4 class="mb-0">
               <i class="fa-solid fa-bell me-2"></i>
-              Notification Preferences
+              {{ 'profile.notifications.title' | translate }}
             </h4>
           </div>
           <div class="card-body">
-            <p class="text-muted mb-4">Choose how you want to receive notifications and updates</p>
+            <p class="text-muted mb-4">{{ 'profile.notifications.subtitle' | translate }}</p>
 
             <!-- Email Notifications -->
             <div class="preference-item">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
-                  <h6 class="mb-1">Email Notifications</h6>
-                  <p class="text-muted small mb-0">Receive notifications via email</p>
+                  <h6 class="mb-1">{{ 'profile.notifications.email.title' | translate }}</h6>
+                  <p class="text-muted small mb-0">
+                    {{ 'profile.notifications.email.description' | translate }}
+                  </p>
                 </div>
                 <div class="form-check form-switch">
-                  <input 
-                    class="form-check-input" 
-                    type="checkbox" 
-                    role="switch" 
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
                     [checked]="emailNotifications()"
-                    (change)="togglePreference('email')">
+                    (change)="togglePreference('email')"
+                  />
                 </div>
               </div>
             </div>
 
-            <hr>
+            <hr />
 
             <!-- SMS Notifications -->
             <div class="preference-item">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
-                  <h6 class="mb-1">SMS Notifications</h6>
-                  <p class="text-muted small mb-0">Receive notifications via text message</p>
+                  <h6 class="mb-1">{{ 'profile.notifications.sms.title' | translate }}</h6>
+                  <p class="text-muted small mb-0">
+                    {{ 'profile.notifications.sms.description' | translate }}
+                  </p>
                 </div>
                 <div class="form-check form-switch">
-                  <input 
-                    class="form-check-input" 
-                    type="checkbox" 
-                    role="switch" 
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
                     [checked]="smsNotifications()"
-                    (change)="togglePreference('sms')">
+                    (change)="togglePreference('sms')"
+                  />
                 </div>
               </div>
             </div>
 
-            <hr>
+            <hr />
 
             <!-- Weekly Reports -->
             <div class="preference-item">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
-                  <h6 class="mb-1">Weekly Progress Reports</h6>
-                  <p class="text-muted small mb-0">Get weekly summaries of your mental health progress</p>
+                  <h6 class="mb-1">
+                    {{ 'profile.notifications.weeklyReports.title' | translate }}
+                  </h6>
+                  <p class="text-muted small mb-0">
+                    {{ 'profile.notifications.weeklyReports.description' | translate }}
+                  </p>
                 </div>
                 <div class="form-check form-switch">
-                  <input 
-                    class="form-check-input" 
-                    type="checkbox" 
-                    role="switch" 
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
                     [checked]="weeklyReports()"
-                    (change)="togglePreference('weekly')">
+                    (change)="togglePreference('weekly')"
+                  />
                 </div>
               </div>
             </div>
 
-            <hr>
+            <hr />
 
             <!-- Appointment Reminders -->
             <div class="preference-item">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
-                  <h6 class="mb-1">Appointment Reminders</h6>
-                  <p class="text-muted small mb-0">Receive reminders before scheduled appointments</p>
+                  <h6 class="mb-1">
+                    {{ 'profile.notifications.appointmentReminders.title' | translate }}
+                  </h6>
+                  <p class="text-muted small mb-0">
+                    {{ 'profile.notifications.appointmentReminders.description' | translate }}
+                  </p>
                 </div>
                 <div class="form-check form-switch">
-                  <input 
-                    class="form-check-input" 
-                    type="checkbox" 
-                    role="switch" 
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
                     [checked]="appointmentReminders()"
-                    (change)="togglePreference('appointments')">
+                    (change)="togglePreference('appointments')"
+                  />
                 </div>
               </div>
             </div>
@@ -369,4 +431,3 @@
     </div>
   </div>
 </div>
-
