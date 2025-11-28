@@ -30,15 +30,21 @@ export class LoginComponent {
       this.errorMessage = '';
 
       const credentials = this.loginForm.value;
-      const success = this.authService.login(credentials);
-
-      if (success) {
-        this.router.navigate(['/home']);
-      } else {
-        this.errorMessage = 'Email o contraseña incorrectos';
-      }
-
-      this.isLoading = false;
+      this.authService.login(credentials).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          if (response) {
+            this.router.navigate(['/home']);
+          } else {
+            this.errorMessage = 'Email o contraseña incorrectos';
+          }
+        },
+        error: (error) => {
+          this.isLoading = false;
+          this.errorMessage = 'Error al iniciar sesión. Por favor, intenta de nuevo.';
+          console.error('Login error:', error);
+        },
+      });
     } else {
       this.markFormGroupTouched();
     }

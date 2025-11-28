@@ -2,6 +2,8 @@ import { Component, signal, computed, Output, EventEmitter, OnInit } from '@angu
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { AppointmentService } from '../../../services/appointment.service';
+import { CreateAppointmentRequest, Appointment } from '../../../models/appointment.model';
 
 export interface AppointmentData {
   psychologistId: number;
@@ -95,7 +97,7 @@ export class CreateAppointmentModalComponent implements OnInit {
     'Other',
   ];
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private appointmentService: AppointmentService) {}
 
   ngOnInit(): void {
     this.initializeForm();
@@ -103,7 +105,7 @@ export class CreateAppointmentModalComponent implements OnInit {
 
   private initializeForm(): void {
     const today = new Date().toISOString().split('T')[0];
-    
+
     this.appointmentForm = this.fb.group({
       psychologistId: ['', Validators.required],
       date: ['', [Validators.required, this.futureDateValidator]],
@@ -117,15 +119,15 @@ export class CreateAppointmentModalComponent implements OnInit {
   // Custom validator for future dates
   private futureDateValidator(control: any) {
     if (!control.value) return null;
-    
+
     const selectedDate = new Date(control.value);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     if (selectedDate < today) {
       return { pastDate: true };
     }
-    
+
     return null;
   }
 
@@ -138,7 +140,7 @@ export class CreateAppointmentModalComponent implements OnInit {
   getSelectedPsychologist = computed(() => {
     const id = this.appointmentForm?.get('psychologistId')?.value;
     if (!id) return null;
-    return this.psychologists().find(p => p.id === parseInt(id)) || null;
+    return this.psychologists().find((p) => p.id === parseInt(id)) || null;
   });
 
   // Check if form field has error
@@ -154,8 +156,9 @@ export class CreateAppointmentModalComponent implements OnInit {
 
     if (field.errors['required']) return 'This field is required';
     if (field.errors['pastDate']) return 'Please select a future date';
-    if (field.errors['maxlength']) return `Maximum ${field.errors['maxlength'].requiredLength} characters`;
-    
+    if (field.errors['maxlength'])
+      return `Maximum ${field.errors['maxlength'].requiredLength} characters`;
+
     return 'Invalid value';
   }
 
@@ -170,7 +173,7 @@ export class CreateAppointmentModalComponent implements OnInit {
   }
 
   // Submit form
-  async submitAppointment(): Promise<void> {
+  submitAppointment(): void {
     if (this.appointmentForm.invalid) {
       this.markFormGroupTouched(this.appointmentForm);
       return;
@@ -180,66 +183,70 @@ export class CreateAppointmentModalComponent implements OnInit {
     this.submitError.set(null);
 
     try {
-      // Simulate API call
-      await this.delay(1500);
-
       const formValue = this.appointmentForm.value;
       const selectedPsychologist = this.psychologists().find(
-        p => p.id === parseInt(formValue.psychologistId)
+        (p) => p.id === parseInt(formValue.psychologistId)
       );
 
-      const appointmentData: AppointmentData = {
+      // Get current user from localStorage
+      const userData = localStorage.getItem('neurozen_user');
+      if (!userData) {
+        throw new Error('User not logged in');
+      }
+      const user = JSON.parse(userData);
+
+      // Combine date and time into ISO 8601 format
+      const appointmentDateTime = `${formValue.date}T${formValue.time}:00`;
+
+      // Create appointment request for backend
+      const createRequest: CreateAppointmentRequest = {
+        employeeId: user.id,
         psychologistId: parseInt(formValue.psychologistId),
-        psychologistName: selectedPsychologist?.name || '',
-        date: formValue.date,
-        time: formValue.time,
-        type: formValue.type,
-        reason: formValue.reason,
-        notes: formValue.notes,
+        appointmentDateTime: appointmentDateTime,
       };
 
-      // Save to localStorage (temporary solution)
-      this.saveAppointmentToLocalStorage(appointmentData);
+      // Call backend API
+      this.appointmentService.createAppointment(createRequest).subscribe({
+        next: (appointment: Appointment) => {
+          console.log('Appointment created in backend:', appointment);
 
-      this.submitSuccess.set(true);
-      
-      // Emit created event
-      this.created.emit(appointmentData);
+          // Create appointment data for UI
+          const appointmentData: AppointmentData = {
+            psychologistId: parseInt(formValue.psychologistId),
+            psychologistName: selectedPsychologist?.name || '',
+            date: formValue.date,
+            time: formValue.time,
+            type: formValue.type,
+            reason: formValue.reason,
+            notes: formValue.notes,
+          };
 
-      // Close modal after 2 seconds
-      setTimeout(() => {
-        this.closeModal();
-      }, 2000);
+          this.submitSuccess.set(true);
+          this.isSubmitting.set(false);
 
+          // Emit created event
+          this.created.emit(appointmentData);
+
+          // Close modal after 2 seconds
+          setTimeout(() => {
+            this.closeModal();
+          }, 2000);
+        },
+        error: (error) => {
+          console.error('Failed to create appointment:', error);
+          this.submitError.set('Failed to create appointment. Please try again.');
+          this.isSubmitting.set(false);
+        },
+      });
     } catch (error) {
+      console.error('Error creating appointment:', error);
       this.submitError.set('Failed to create appointment. Please try again.');
       this.isSubmitting.set(false);
     }
   }
 
-  private saveAppointmentToLocalStorage(appointment: AppointmentData): void {
-    const appointments = this.getAppointmentsFromLocalStorage();
-    const newAppointment = {
-      id: Date.now(),
-      ...appointment,
-      status: 'upcoming',
-      createdAt: new Date().toISOString(),
-    };
-    appointments.push(newAppointment);
-    localStorage.setItem('neurozen_appointments', JSON.stringify(appointments));
-  }
-
-  private getAppointmentsFromLocalStorage(): any[] {
-    const data = localStorage.getItem('neurozen_appointments');
-    return data ? JSON.parse(data) : [];
-  }
-
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
   private markFormGroupTouched(formGroup: FormGroup): void {
-    Object.keys(formGroup.controls).forEach(key => {
+    Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
       control?.markAsTouched();
     });
@@ -257,4 +264,3 @@ export class CreateAppointmentModalComponent implements OnInit {
     }
   }
 }
-

@@ -1,4 +1,11 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
+import { AssessmentService } from './assessment.service';
+import { AuthService } from './auth.service';
+import {
+  CreateAssessmentRequest,
+  AssessmentType,
+  EmotionalState,
+} from '../models/assessment.model';
 
 export interface AssessmentResult {
   id: string;
@@ -27,6 +34,9 @@ export interface ReminderSettings {
   providedIn: 'root',
 })
 export class AssessmentHistoryService {
+  private assessmentService = inject(AssessmentService);
+  private authService = inject(AuthService);
+
   // Assessment history stored in signal
   private assessmentHistory = signal<AssessmentResult[]>([]);
 
@@ -37,8 +47,8 @@ export class AssessmentHistoryService {
   });
 
   constructor() {
+    this.loadFromBackend();
     this.loadFromLocalStorage();
-    this.generateMockData(); // For initial testing
   }
 
   // Get all assessments
@@ -68,16 +78,103 @@ export class AssessmentHistoryService {
       id: this.generateId(),
       timestamp: new Date(),
     };
+
+    // Save to local state immediately for quick UI update
     this.assessmentHistory.update((history) => [...history, newAssessment]);
     this.saveToLocalStorage();
+
+    // Save to backend
+    this.saveToBackend(newAssessment);
+  }
+
+  // Save assessment to backend
+  private saveToBackend(assessment: AssessmentResult): void {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) {
+      console.warn('No user logged in, skipping backend save');
+      return;
+    }
+
+    // Map frontend assessment to backend format
+    const backendRequest: CreateAssessmentRequest = {
+      employeeId: currentUser.id,
+      assessmentType: this.mapToAssessmentType(assessment.level),
+      emotionalState: this.mapToEmotionalState(assessment.score),
+      score: assessment.score,
+      observations: this.formatCategoryScores(assessment.categoryScores),
+      recommendations: assessment.recommendations.join('; '),
+    };
+
+    this.assessmentService.createAssessment(backendRequest).subscribe({
+      next: (response) => {
+        console.log('Assessment saved to backend:', response);
+        // Update the local assessment with the backend ID
+        this.assessmentHistory.update((history) =>
+          history.map((a) => (a.id === assessment.id ? { ...a, id: response.id.toString() } : a))
+        );
+        this.saveToLocalStorage();
+      },
+      error: (error) => {
+        console.error('Failed to save assessment to backend:', error);
+      },
+    });
+  }
+
+  // Map stress level to assessment type
+  private mapToAssessmentType(level: 'low' | 'moderate' | 'high'): AssessmentType {
+    // All stress assessments are STRESS_LEVEL type
+    return 'STRESS_LEVEL';
+  }
+
+  // Map score to emotional state
+  private mapToEmotionalState(score: number): EmotionalState {
+    if (score >= 67) return 'CRITICAL';
+    if (score >= 50) return 'POOR';
+    if (score >= 34) return 'MODERATE';
+    if (score >= 17) return 'GOOD';
+    return 'EXCELLENT';
+  }
+
+  // Format category scores as observations
+  private formatCategoryScores(categoryScores: {
+    work: number;
+    sleep: number;
+    physical: number;
+    emotional: number;
+  }): string {
+    return `Work: ${categoryScores.work}, Sleep: ${categoryScores.sleep}, Physical: ${categoryScores.physical}, Emotional: ${categoryScores.emotional}`;
   }
 
   // Delete assessment
   deleteAssessment(id: string): void {
-    this.assessmentHistory.update((history) =>
-      history.filter((assessment) => assessment.id !== id)
-    );
-    this.saveToLocalStorage();
+    // Delete from backend first
+    const assessmentId = parseInt(id, 10);
+    if (!isNaN(assessmentId)) {
+      this.assessmentService.deleteAssessment(assessmentId).subscribe({
+        next: () => {
+          console.log('Assessment deleted from backend:', id);
+          // Update local state after successful backend deletion
+          this.assessmentHistory.update((history) =>
+            history.filter((assessment) => assessment.id !== id)
+          );
+          this.saveToLocalStorage();
+        },
+        error: (error) => {
+          console.error('Failed to delete assessment from backend:', error);
+          // Still delete from local storage even if backend fails
+          this.assessmentHistory.update((history) =>
+            history.filter((assessment) => assessment.id !== id)
+          );
+          this.saveToLocalStorage();
+        },
+      });
+    } else {
+      // If ID is not a number (old localStorage-only assessment), just delete locally
+      this.assessmentHistory.update((history) =>
+        history.filter((assessment) => assessment.id !== id)
+      );
+      this.saveToLocalStorage();
+    }
   }
 
   // Get assessment by ID
@@ -229,76 +326,76 @@ export class AssessmentHistoryService {
     return `assessment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  // Generate mock data for testing
-  private generateMockData(): void {
-    // Only generate if no data exists
-    if (this.assessmentHistory().length > 0) return;
+  // Load assessments from backend
+  private loadFromBackend(): void {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) {
+      console.log('No user logged in, skipping backend load');
+      return;
+    }
 
-    const mockAssessments: AssessmentResult[] = [
-      {
-        id: this.generateId(),
-        score: 65,
-        level: 'moderate',
-        timestamp: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
-        categoryScores: { work: 70, sleep: 60, physical: 65, emotional: 65 },
-        recommendations: [
-          'modals.stressAssessment.recommendations.moderate_1',
-          'modals.stressAssessment.recommendations.moderate_2',
-        ],
-        answers: new Map(),
-      },
-      {
-        id: this.generateId(),
-        score: 58,
-        level: 'moderate',
-        timestamp: new Date(Date.now() - 23 * 24 * 60 * 60 * 1000), // 23 days ago
-        categoryScores: { work: 65, sleep: 55, physical: 60, emotional: 55 },
-        recommendations: [
-          'modals.stressAssessment.recommendations.moderate_1',
-          'modals.stressAssessment.recommendations.moderate_3',
-        ],
-        answers: new Map(),
-      },
-      {
-        id: this.generateId(),
-        score: 52,
-        level: 'moderate',
-        timestamp: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000), // 16 days ago
-        categoryScores: { work: 60, sleep: 50, physical: 55, emotional: 50 },
-        recommendations: [
-          'modals.stressAssessment.recommendations.moderate_2',
-          'modals.stressAssessment.recommendations.moderate_4',
-        ],
-        answers: new Map(),
-      },
-      {
-        id: this.generateId(),
-        score: 45,
-        level: 'moderate',
-        timestamp: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000), // 9 days ago
-        categoryScores: { work: 50, sleep: 45, physical: 48, emotional: 42 },
-        recommendations: [
-          'modals.stressAssessment.recommendations.moderate_1',
-          'modals.stressAssessment.recommendations.moderate_4',
-        ],
-        answers: new Map(),
-      },
-      {
-        id: this.generateId(),
-        score: 38,
-        level: 'moderate',
-        timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-        categoryScores: { work: 42, sleep: 38, physical: 40, emotional: 35 },
-        recommendations: [
-          'modals.stressAssessment.recommendations.low_1',
-          'modals.stressAssessment.recommendations.low_2',
-        ],
-        answers: new Map(),
-      },
-    ];
+    this.assessmentService.getAssessmentsByEmployeeId(currentUser.id).subscribe({
+      next: (assessments) => {
+        console.log('Loaded assessments from backend:', assessments);
+        // Map backend assessments to frontend format
+        const mappedAssessments: AssessmentResult[] = assessments.map((a) => ({
+          id: a.id.toString(),
+          score: a.score,
+          level: this.mapScoreToLevel(a.score),
+          recommendations: a.recommendations ? a.recommendations.split('; ') : [],
+          timestamp: new Date(), // Backend doesn't expose createdAt, use current time
+          categoryScores: this.parseCategoryScores(a.observations || ''),
+          answers: new Map(),
+        }));
 
-    this.assessmentHistory.set(mockAssessments);
-    this.saveToLocalStorage();
+        this.assessmentHistory.set(mappedAssessments);
+        this.saveToLocalStorage();
+      },
+      error: (error) => {
+        console.error('Failed to load assessments from backend:', error);
+      },
+    });
+  }
+
+  // Map score to level
+  private mapScoreToLevel(score: number): 'low' | 'moderate' | 'high' {
+    if (score >= 67) return 'high';
+    if (score >= 34) return 'moderate';
+    return 'low';
+  }
+
+  // Parse category scores from observations string
+  private parseCategoryScores(observations: string): {
+    work: number;
+    sleep: number;
+    physical: number;
+    emotional: number;
+  } {
+    const defaultScores = { work: 0, sleep: 0, physical: 0, emotional: 0 };
+
+    if (!observations) return defaultScores;
+
+    try {
+      const parts = observations.split(', ');
+      const scores: any = {};
+
+      parts.forEach((part) => {
+        const [key, value] = part.split(': ');
+        if (key && value) {
+          scores[key.toLowerCase()] = parseInt(value, 10);
+        }
+      });
+
+      return {
+        work: scores.work || 0,
+        sleep: scores.sleep || 0,
+        physical: scores.physical || 0,
+        emotional: scores.emotional || 0,
+      };
+    } catch (error) {
+      console.error('Error parsing category scores:', error);
+      return defaultScores;
+    }
   }
 
   // Clear all data (for testing)
@@ -311,4 +408,3 @@ export class AssessmentHistoryService {
     localStorage.removeItem('neurozen_assessments');
   }
 }
-

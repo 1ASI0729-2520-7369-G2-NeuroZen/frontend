@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +6,8 @@ import {
   CreateAppointmentModalComponent,
   AppointmentData,
 } from '../home/modals/create-appointment-modal/create-appointment-modal.component';
+import { AppointmentService } from '../services/appointment.service';
+import { Appointment as BackendAppointment } from '../models/appointment.model';
 
 interface Psychologist {
   id: number;
@@ -47,7 +49,7 @@ interface Appointment {
   templateUrl: './coaching.html',
   styleUrl: './coaching.css',
 })
-export class Coaching {
+export class Coaching implements OnInit {
   activeTab = signal<'psychologists' | 'community' | 'appointments'>('psychologists');
   selectedFilter = signal('all');
   searchQuery = signal('');
@@ -130,27 +132,64 @@ export class Coaching {
     },
   ]);
 
-  appointments = signal<Appointment[]>([
-    {
-      id: 1,
-      psychologist: 'Dra. María González',
-      date: '2025-10-10',
-      time: '15:00',
-      type: 'Videollamada',
-      status: 'upcoming',
-    },
-    {
-      id: 2,
-      psychologist: 'Dr. Carlos Ruiz',
-      date: '2025-09-28',
-      time: '10:00',
-      type: 'Videollamada',
-      status: 'past',
-    },
-  ]);
+  appointments = signal<Appointment[]>([]);
 
   showAppointmentModal = signal(false);
   selectedPsychologistForBooking = signal<Psychologist | null>(null);
+
+  constructor(private appointmentService: AppointmentService) {}
+
+  ngOnInit(): void {
+    this.loadAppointments();
+  }
+
+  loadAppointments(): void {
+    // Get current user from localStorage
+    const userData = localStorage.getItem('neurozen_user');
+    if (!userData) {
+      console.error('User not logged in');
+      return;
+    }
+    const user = JSON.parse(userData);
+
+    // Load appointments from backend
+    this.appointmentService.getAppointmentsByEmployeeId(user.id).subscribe({
+      next: (backendAppointments: BackendAppointment[]) => {
+        console.log('Loaded appointments from backend:', backendAppointments);
+
+        // Convert backend appointments to UI format
+        const uiAppointments: Appointment[] = backendAppointments.map((apt) => {
+          const dateTime = new Date(apt.appointmentDateTime);
+          const date = dateTime.toISOString().split('T')[0];
+          const time = dateTime.toTimeString().slice(0, 5);
+
+          return {
+            id: apt.id,
+            psychologist: `Psychologist ${apt.psychologistId}`, // TODO: Load psychologist name
+            date: date,
+            time: time,
+            type: 'Videollamada',
+            status: this.mapStatus(apt.status),
+          };
+        });
+
+        this.appointments.set(uiAppointments);
+      },
+      error: (error) => {
+        console.error('Failed to load appointments:', error);
+      },
+    });
+  }
+
+  private mapStatus(backendStatus: string): 'upcoming' | 'past' | 'cancelled' {
+    if (backendStatus === 'CANCELLED') {
+      return 'cancelled';
+    }
+
+    // For now, treat all non-cancelled appointments as upcoming
+    // TODO: Implement proper date comparison
+    return 'upcoming';
+  }
 
   setActiveTab(tab: 'psychologists' | 'community' | 'appointments') {
     this.activeTab.set(tab);

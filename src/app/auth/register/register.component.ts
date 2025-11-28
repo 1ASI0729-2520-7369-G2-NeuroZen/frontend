@@ -50,15 +50,28 @@ export class RegisterComponent {
       this.errorMessage = '';
 
       const credentials = this.registerForm.value;
-      const success = this.authService.register(credentials);
-
-      if (success) {
-        this.router.navigate(['/home']);
-      } else {
-        this.errorMessage = 'El email ya está registrado';
-      }
-
-      this.isLoading = false;
+      this.authService.register(credentials).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          if (response) {
+            this.router.navigate(['/home']);
+          } else {
+            this.errorMessage = 'El email ya está registrado';
+          }
+        },
+        error: (error) => {
+          this.isLoading = false;
+          // Check if backend returned a specific error message
+          if (error.status === 409 && error.error?.message) {
+            this.errorMessage = error.error.message;
+          } else if (error.status === 409) {
+            this.errorMessage = 'El email ya está registrado';
+          } else {
+            this.errorMessage = 'Error al registrarse. Por favor, intenta de nuevo.';
+          }
+          console.error('Registration error:', error);
+        },
+      });
     } else {
       this.markFormGroupTouched();
     }
