@@ -87,6 +87,7 @@ export class AuthService {
             id: response.id,
             email: response.email,
             name: response.name,
+            role: response.role,
           };
           this.currentUserSubject.next(userData);
           localStorage.setItem('currentUser', JSON.stringify(userData));
@@ -131,5 +132,23 @@ export class AuthService {
    */
   getAuthToken(): string | null {
     return localStorage.getItem('authToken');
+  }
+
+  /**
+   * Check if current user is a psychologist
+   * @returns True if user is a psychologist
+   */
+  isPsychologist(): boolean {
+    const user = this.getCurrentUser();
+    return user?.role === 'PSYCHOLOGIST';
+  }
+
+  /**
+   * Check if current user is an employee
+   * @returns True if user is an employee
+   */
+  isEmployee(): boolean {
+    const user = this.getCurrentUser();
+    return user?.role === 'EMPLOYEE' || !user?.role;
   }
 }

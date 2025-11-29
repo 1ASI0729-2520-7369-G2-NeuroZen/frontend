@@ -34,7 +34,12 @@ export class LoginComponent {
         next: (response) => {
           this.isLoading = false;
           if (response) {
-            this.router.navigate(['/home']);
+            // Redirect based on user role
+            if (response.role === 'PSYCHOLOGIST') {
+              this.router.navigate(['/psychologist-dashboard']);
+            } else {
+              this.router.navigate(['/home']);
+            }
           } else {
             this.errorMessage = 'Email o contraseña incorrectos';
           }

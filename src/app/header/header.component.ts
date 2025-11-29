@@ -38,4 +38,12 @@ export class HeaderComponent implements OnInit {
   goToCoaching(): void {
     this.router.navigate(['/home']);
   }
+
+  isPsychologist(): boolean {
+    return this.authService.isPsychologist();
+  }
+
+  isEmployee(): boolean {
+    return this.authService.isEmployee();
+  }
 }

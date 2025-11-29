@@ -30,7 +30,13 @@
       <div class="collapse navbar-collapse" id="nav">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
           <!-- Navigation for authenticated users -->
-          @if (currentUser) {
+          @if (currentUser) { @if (isPsychologist()) {
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/psychologist-dashboard" routerLinkActive="active">
+              <i class="fa-solid fa-dashboard me-1"></i>Panel de Control
+            </a>
+          </li>
+          } @else {
           <li class="nav-item">
             <a class="nav-link" routerLink="/home" routerLinkActive="active">
               <i class="fa-solid fa-home me-1"></i>{{ 'header.home' | translate }}
@@ -46,7 +52,7 @@
               <i class="fa-solid fa-users me-1"></i>{{ 'header.coaching' | translate }}
             </a>
           </li>
-          }
+          } }
           <!-- Navigation for non-authenticated users -->
           @if (!currentUser) {
           <li class="nav-item">
