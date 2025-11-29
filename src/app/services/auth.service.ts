@@ -7,6 +7,7 @@ export interface User {
   id: number;
   email: string;
   name: string;
+  role?: string;
 }
 
 export interface LoginCredentials {
@@ -25,6 +26,7 @@ export interface AuthenticationResponse {
   email: string;
   name: string;
   token: string;
+  role: string;
 }
 
 @Injectable({
@@ -58,6 +60,7 @@ export class AuthService {
             id: response.id,
             email: response.email,
             name: response.name,
+            role: response.role,
           };
           this.currentUserSubject.next(userData);
           localStorage.setItem('currentUser', JSON.stringify(userData));
