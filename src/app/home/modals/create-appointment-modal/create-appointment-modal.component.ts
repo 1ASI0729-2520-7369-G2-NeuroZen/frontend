@@ -4,6 +4,10 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { TranslateModule } from '@ngx-translate/core';
 import { AppointmentService } from '../../../services/appointment.service';
 import { CreateAppointmentRequest, Appointment } from '../../../models/appointment.model';
+import {
+  PsychologistService,
+  Psychologist as BackendPsychologist,
+} from '../../../services/psychologist.service';
 
 export interface AppointmentData {
   psychologistId: number;
@@ -39,44 +43,8 @@ export class CreateAppointmentModalComponent implements OnInit {
   submitSuccess = signal(false);
   submitError = signal<string | null>(null);
 
-  // Available psychologists (mock data - will be replaced with API call)
-  psychologists = signal<Psychologist[]>([
-    {
-      id: 1,
-      name: 'Dra. María González',
-      specialty: 'Anxiety & Stress',
-      rating: 4.9,
-      nextAvailable: '2025-10-15',
-    },
-    {
-      id: 2,
-      name: 'Dr. Carlos Ruiz',
-      specialty: 'Depression & Mood',
-      rating: 4.8,
-      nextAvailable: '2025-10-12',
-    },
-    {
-      id: 3,
-      name: 'Dra. Ana Martínez',
-      specialty: 'Trauma & PTSD',
-      rating: 4.9,
-      nextAvailable: '2025-10-14',
-    },
-    {
-      id: 4,
-      name: 'Dr. Luis Fernández',
-      specialty: 'Relationships',
-      rating: 4.7,
-      nextAvailable: '2025-10-16',
-    },
-    {
-      id: 5,
-      name: 'Dra. Sofia López',
-      specialty: 'Work-Life Balance',
-      rating: 4.8,
-      nextAvailable: '2025-10-13',
-    },
-  ]);
+  // Available psychologists (loaded from backend)
+  psychologists = signal<Psychologist[]>([]);
 
   // Appointment types
   appointmentTypes = [
@@ -97,10 +65,46 @@ export class CreateAppointmentModalComponent implements OnInit {
     'Other',
   ];
 
-  constructor(private fb: FormBuilder, private appointmentService: AppointmentService) {}
+  constructor(
+    private fb: FormBuilder,
+    private appointmentService: AppointmentService,
+    private psychologistService: PsychologistService
+  ) {}
 
   ngOnInit(): void {
     this.initializeForm();
+    this.loadPsychologists();
+  }
+
+  loadPsychologists(): void {
+    this.psychologistService.getAllPsychologists().subscribe({
+      next: (backendPsychologists: BackendPsychologist[]) => {
+        console.log('Loaded psychologists for modal:', backendPsychologists);
+
+        // Convert backend psychologists to UI format
+        const uiPsychologists: Psychologist[] = backendPsychologists.map((psy) => {
+          const specialtyMap: { [key: string]: string } = {
+            'Dra. María González': 'Estrés laboral',
+            'Dr. Carlos Ruiz': 'Mindfulness',
+            'Dra. Ana Martínez': 'Burnout',
+            'Dr. Sarah Martinez': 'Ansiedad',
+          };
+
+          return {
+            id: psy.id,
+            name: psy.name,
+            specialty: specialtyMap[psy.name] || 'Psicología General',
+            rating: 4.8 + Math.random() * 0.2,
+            nextAvailable: new Date().toISOString().split('T')[0],
+          };
+        });
+
+        this.psychologists.set(uiPsychologists);
+      },
+      error: (error) => {
+        console.error('Failed to load psychologists:', error);
+      },
+    });
   }
 
   private initializeForm(): void {
@@ -174,7 +178,21 @@ export class CreateAppointmentModalComponent implements OnInit {
 
   // Submit form
   submitAppointment(): void {
+    console.log('=== SUBMIT APPOINTMENT DEBUG ===');
+    console.log('Form valid:', this.appointmentForm.valid);
+    console.log('Form value:', this.appointmentForm.value);
+    console.log('Form errors:', this.appointmentForm.errors);
+    console.log('Psychologists loaded:', this.psychologists().length);
+    console.log('Psychologists:', this.psychologists());
+
     if (this.appointmentForm.invalid) {
+      console.error('Form is invalid!');
+      Object.keys(this.appointmentForm.controls).forEach((key) => {
+        const control = this.appointmentForm.get(key);
+        if (control?.invalid) {
+          console.error(`Field ${key} is invalid:`, control.errors);
+        }
+      });
       this.markFormGroupTouched(this.appointmentForm);
       return;
     }
@@ -188,15 +206,20 @@ export class CreateAppointmentModalComponent implements OnInit {
         (p) => p.id === parseInt(formValue.psychologistId)
       );
 
+      console.log('Selected psychologist:', selectedPsychologist);
+
       // Get current user from localStorage
-      const userData = localStorage.getItem('neurozen_user');
+      const userData = localStorage.getItem('currentUser');
       if (!userData) {
+        console.error('User not logged in!');
         throw new Error('User not logged in');
       }
       const user = JSON.parse(userData);
+      console.log('Current user:', user);
 
       // Combine date and time into ISO 8601 format
       const appointmentDateTime = `${formValue.date}T${formValue.time}:00`;
+      console.log('Appointment date time:', appointmentDateTime);
 
       // Create appointment request for backend
       const createRequest: CreateAppointmentRequest = {
@@ -205,10 +228,12 @@ export class CreateAppointmentModalComponent implements OnInit {
         appointmentDateTime: appointmentDateTime,
       };
 
+      console.log('Create request:', createRequest);
+
       // Call backend API
       this.appointmentService.createAppointment(createRequest).subscribe({
         next: (appointment: Appointment) => {
-          console.log('Appointment created in backend:', appointment);
+          console.log('✅ Appointment created in backend:', appointment);
 
           // Create appointment data for UI
           const appointmentData: AppointmentData = {
@@ -233,13 +258,19 @@ export class CreateAppointmentModalComponent implements OnInit {
           }, 2000);
         },
         error: (error) => {
-          console.error('Failed to create appointment:', error);
+          console.error('❌ Failed to create appointment:', error);
+          console.error('Error details:', {
+            status: error.status,
+            statusText: error.statusText,
+            message: error.message,
+            error: error.error,
+          });
           this.submitError.set('Failed to create appointment. Please try again.');
           this.isSubmitting.set(false);
         },
       });
     } catch (error) {
-      console.error('Error creating appointment:', error);
+      console.error('❌ Exception creating appointment:', error);
       this.submitError.set('Failed to create appointment. Please try again.');
       this.isSubmitting.set(false);
     }

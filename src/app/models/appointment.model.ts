@@ -28,11 +28,16 @@ export interface CompleteAppointmentRequest {
   notes?: string;
 }
 
-export type AppointmentStatus = 
-  | 'PENDING'
+export type AppointmentStatus =
+  | 'scheduled'
+  | 'confirmed'
+  | 'in_progress'
+  | 'completed'
+  | 'cancelled'
+  | 'no_show'
+  | 'SCHEDULED'
   | 'CONFIRMED'
   | 'IN_PROGRESS'
   | 'COMPLETED'
   | 'CANCELLED'
-  | 'RESCHEDULED';
-
+  | 'NO_SHOW';

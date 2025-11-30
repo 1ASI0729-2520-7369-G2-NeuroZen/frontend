@@ -8,6 +8,10 @@ import {
 } from '../home/modals/create-appointment-modal/create-appointment-modal.component';
 import { AppointmentService } from '../services/appointment.service';
 import { Appointment as BackendAppointment } from '../models/appointment.model';
+import {
+  PsychologistService,
+  Psychologist as BackendPsychologist,
+} from '../services/psychologist.service';
 
 interface Psychologist {
   id: number;
@@ -54,53 +58,7 @@ export class Coaching implements OnInit {
   selectedFilter = signal('all');
   searchQuery = signal('');
 
-  psychologists = signal<Psychologist[]>([
-    {
-      id: 1,
-      name: 'Dra. María González',
-      specialty: 'Estrés laboral',
-      rating: 4.9,
-      reviews: 127,
-      price: 45,
-      image: 'https://i.pravatar.cc/150?img=1',
-      experience: 12,
-      languages: ['Español', 'Inglés'],
-      nextAvailable: 'Hoy, 3:00 PM',
-      specialties: ['Estrés laboral', 'Ansiedad', 'Burnout'],
-      about:
-        'Especialista en manejo de estrés laboral con más de 12 años de experiencia ayudando a profesionales a encontrar equilibrio.',
-    },
-    {
-      id: 2,
-      name: 'Dr. Carlos Ruiz',
-      specialty: 'Mindfulness',
-      rating: 4.8,
-      reviews: 98,
-      price: 50,
-      image: 'https://i.pravatar.cc/150?img=12',
-      experience: 8,
-      languages: ['Español'],
-      nextAvailable: 'Mañana, 10:00 AM',
-      specialties: ['Mindfulness', 'Meditación', 'Ansiedad'],
-      about:
-        'Practicante de mindfulness certificado, enfocado en técnicas de meditación y reducción de estrés.',
-    },
-    {
-      id: 3,
-      name: 'Dra. Ana Martínez',
-      specialty: 'Burnout',
-      rating: 5.0,
-      reviews: 156,
-      price: 55,
-      image: 'https://i.pravatar.cc/150?img=5',
-      experience: 15,
-      languages: ['Español', 'Inglés', 'Francés'],
-      nextAvailable: 'Hoy, 5:00 PM',
-      specialties: ['Burnout', 'Estrés laboral', 'Resiliencia'],
-      about:
-        'Experta en prevención y recuperación de burnout, con enfoque en desarrollo de resiliencia.',
-    },
-  ]);
+  psychologists = signal<Psychologist[]>([]);
 
   forumTopics = signal<ForumTopic[]>([
     {
@@ -137,10 +95,60 @@ export class Coaching implements OnInit {
   showAppointmentModal = signal(false);
   selectedPsychologistForBooking = signal<Psychologist | null>(null);
 
-  constructor(private appointmentService: AppointmentService) {}
+  constructor(
+    private appointmentService: AppointmentService,
+    private psychologistService: PsychologistService
+  ) {}
 
   ngOnInit(): void {
+    this.loadPsychologists();
     this.loadAppointments();
+  }
+
+  loadPsychologists(): void {
+    this.psychologistService.getAllPsychologists().subscribe({
+      next: (backendPsychologists: BackendPsychologist[]) => {
+        console.log('Loaded psychologists from backend:', backendPsychologists);
+
+        // Convert backend psychologists to UI format
+        const uiPsychologists: Psychologist[] = backendPsychologists.map((psy, index) => {
+          // Map psychologist data to UI format with default values
+          const specialtyMap: { [key: string]: string } = {
+            'Dra. María González': 'Estrés laboral',
+            'Dr. Carlos Ruiz': 'Mindfulness',
+            'Dra. Ana Martínez': 'Burnout',
+            'Dr. Sarah Martinez': 'Ansiedad',
+          };
+
+          const specialtiesMap: { [key: string]: string[] } = {
+            'Dra. María González': ['Estrés laboral', 'Ansiedad', 'Burnout'],
+            'Dr. Carlos Ruiz': ['Mindfulness', 'Meditación', 'Ansiedad'],
+            'Dra. Ana Martínez': ['Burnout', 'Estrés laboral', 'Resiliencia'],
+            'Dr. Sarah Martinez': ['Ansiedad', 'Depresión', 'Terapia Cognitiva'],
+          };
+
+          return {
+            id: psy.id,
+            name: psy.name,
+            specialty: specialtyMap[psy.name] || 'Psicología General',
+            rating: 4.8 + Math.random() * 0.2,
+            reviews: 80 + Math.floor(Math.random() * 100),
+            price: 45 + index * 5,
+            image: `https://i.pravatar.cc/150?img=${index + 1}`,
+            experience: 8 + index * 2,
+            languages: ['Español', 'Inglés'],
+            nextAvailable: index % 2 === 0 ? 'Hoy, 3:00 PM' : 'Mañana, 10:00 AM',
+            specialties: specialtiesMap[psy.name] || ['Psicología General'],
+            about: psy.bio || 'Psicólogo profesional con experiencia en diversas áreas.',
+          };
+        });
+
+        this.psychologists.set(uiPsychologists);
+      },
+      error: (error) => {
+        console.error('Failed to load psychologists:', error);
+      },
+    });
   }
 
   loadAppointments(): void {
@@ -163,9 +171,13 @@ export class Coaching implements OnInit {
           const date = dateTime.toISOString().split('T')[0];
           const time = dateTime.toTimeString().slice(0, 5);
 
+          // Find psychologist name from loaded psychologists
+          const psychologist = this.psychologists().find((p) => p.id === apt.psychologistId);
+          const psychologistName = psychologist?.name || `Psychologist ${apt.psychologistId}`;
+
           return {
             id: apt.id,
-            psychologist: `Psychologist ${apt.psychologistId}`, // TODO: Load psychologist name
+            psychologist: psychologistName,
             date: date,
             time: time,
             type: 'Videollamada',
