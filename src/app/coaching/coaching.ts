@@ -1,7 +1,18 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import {
+  CreateAppointmentModalComponent,
+  AppointmentData,
+} from '../home/modals/create-appointment-modal/create-appointment-modal.component';
+import { PsychologistProfileModalComponent } from './modals/psychologist-profile-modal/psychologist-profile-modal.component';
+import { AppointmentService } from '../services/appointment.service';
+import { Appointment as BackendAppointment } from '../models/appointment.model';
+import {
+  PsychologistService,
+  Psychologist as BackendPsychologist,
+} from '../services/psychologist.service';
 
 interface Psychologist {
   id: number;
@@ -18,16 +29,6 @@ interface Psychologist {
   about: string;
 }
 
-interface ForumTopic {
-  id: number;
-  title: string;
-  category: string;
-  author: string;
-  replies: number;
-  views: number;
-  lastActivity: string;
-}
-
 interface Appointment {
   id: number;
   psychologist: string;
@@ -39,135 +40,236 @@ interface Appointment {
 
 @Component({
   selector: 'app-coaching',
-  imports: [TranslateModule, CommonModule, FormsModule],
+  imports: [
+    TranslateModule,
+    CommonModule,
+    FormsModule,
+    CreateAppointmentModalComponent,
+    PsychologistProfileModalComponent,
+  ],
   templateUrl: './coaching.html',
   styleUrl: './coaching.css',
 })
-export class Coaching {
-  activeTab = signal<'psychologists' | 'community' | 'appointments'>('psychologists');
+export class Coaching implements OnInit {
+  activeTab = signal<'psychologists' | 'appointments'>('psychologists');
   selectedFilter = signal('all');
   searchQuery = signal('');
 
-  psychologists = signal<Psychologist[]>([
-    {
-      id: 1,
-      name: 'Dra. María González',
-      specialty: 'Estrés laboral',
-      rating: 4.9,
-      reviews: 127,
-      price: 45,
-      image: 'https://i.pravatar.cc/150?img=1',
-      experience: 12,
-      languages: ['Español', 'Inglés'],
-      nextAvailable: 'Hoy, 3:00 PM',
-      specialties: ['Estrés laboral', 'Ansiedad', 'Burnout'],
-      about:
-        'Especialista en manejo de estrés laboral con más de 12 años de experiencia ayudando a profesionales a encontrar equilibrio.',
-    },
-    {
-      id: 2,
-      name: 'Dr. Carlos Ruiz',
-      specialty: 'Mindfulness',
-      rating: 4.8,
-      reviews: 98,
-      price: 50,
-      image: 'https://i.pravatar.cc/150?img=12',
-      experience: 8,
-      languages: ['Español'],
-      nextAvailable: 'Mañana, 10:00 AM',
-      specialties: ['Mindfulness', 'Meditación', 'Ansiedad'],
-      about:
-        'Practicante de mindfulness certificado, enfocado en técnicas de meditación y reducción de estrés.',
-    },
-    {
-      id: 3,
-      name: 'Dra. Ana Martínez',
-      specialty: 'Burnout',
-      rating: 5.0,
-      reviews: 156,
-      price: 55,
-      image: 'https://i.pravatar.cc/150?img=5',
-      experience: 15,
-      languages: ['Español', 'Inglés', 'Francés'],
-      nextAvailable: 'Hoy, 5:00 PM',
-      specialties: ['Burnout', 'Estrés laboral', 'Resiliencia'],
-      about:
-        'Experta en prevención y recuperación de burnout, con enfoque en desarrollo de resiliencia.',
-    },
-  ]);
+  psychologists = signal<Psychologist[]>([]);
 
-  forumTopics = signal<ForumTopic[]>([
-    {
-      id: 1,
-      title: '¿Cómo manejan el estrés de las reuniones constantes?',
-      category: 'workStress',
-      author: 'Juan P.',
-      replies: 23,
-      views: 145,
-      lastActivity: 'Hace 2 horas',
-    },
-    {
-      id: 2,
-      title: 'Mi rutina de respiración matutina que cambió todo',
-      category: 'techniques',
-      author: 'Laura M.',
-      replies: 45,
-      views: 312,
-      lastActivity: 'Hace 5 horas',
-    },
-    {
-      id: 3,
-      title: 'Superé el burnout: mi historia',
-      category: 'success',
-      author: 'Roberto S.',
-      replies: 67,
-      views: 523,
-      lastActivity: 'Hace 1 día',
-    },
-  ]);
+  appointments = signal<Appointment[]>([]);
 
-  appointments = signal<Appointment[]>([
-    {
-      id: 1,
-      psychologist: 'Dra. María González',
-      date: '2025-10-10',
-      time: '15:00',
-      type: 'Videollamada',
-      status: 'upcoming',
-    },
-    {
-      id: 2,
-      psychologist: 'Dr. Carlos Ruiz',
-      date: '2025-09-28',
-      time: '10:00',
-      type: 'Videollamada',
-      status: 'past',
-    },
-  ]);
+  showAppointmentModal = signal(false);
+  selectedPsychologistForBooking = signal<Psychologist | null>(null);
 
-  setActiveTab(tab: 'psychologists' | 'community' | 'appointments') {
+  showProfileModal = signal(false);
+  selectedPsychologistForProfile = signal<Psychologist | null>(null);
+
+  constructor(
+    private appointmentService: AppointmentService,
+    private psychologistService: PsychologistService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadPsychologists();
+  }
+
+  loadPsychologists(): void {
+    this.psychologistService.getAllPsychologists().subscribe({
+      next: (backendPsychologists: BackendPsychologist[]) => {
+        console.log('Loaded psychologists from backend:', backendPsychologists);
+
+        // Convert backend psychologists to UI format
+        const uiPsychologists: Psychologist[] = backendPsychologists.map((psy, index) => {
+          // Map psychologist data to UI format with default values
+          const specialtyMap: { [key: string]: string } = {
+            'Dra. María González': 'Estrés laboral',
+            'Dr. Carlos Ruiz': 'Mindfulness',
+            'Dra. Ana Martínez': 'Burnout',
+            'Dr. Sarah Martinez': 'Ansiedad',
+            'Dr. David Chen': 'Ansiedad',
+          };
+
+          const specialtiesMap: { [key: string]: string[] } = {
+            'Dra. María González': ['Estrés laboral', 'Ansiedad', 'Burnout'],
+            'Dr. Carlos Ruiz': ['Mindfulness', 'Meditación', 'Ansiedad'],
+            'Dra. Ana Martínez': ['Burnout', 'Estrés laboral', 'Resiliencia'],
+            'Dr. Sarah Martinez': ['Ansiedad', 'Depresión', 'Terapia Cognitiva'],
+            'Dr. David Chen': ['Ansiedad', 'Mindfulness', 'Terapia Cognitiva'],
+          };
+
+          return {
+            id: psy.id,
+            name: psy.name,
+            specialty: specialtyMap[psy.name] || 'Psicología General',
+            rating: 4.8 + Math.random() * 0.2,
+            reviews: 80 + Math.floor(Math.random() * 100),
+            price: 45 + index * 5,
+            image: `https://i.pravatar.cc/150?img=${index + 1}`,
+            experience: 8 + index * 2,
+            languages: ['Español', 'Inglés'],
+            nextAvailable: index % 2 === 0 ? 'Hoy, 3:00 PM' : 'Mañana, 10:00 AM',
+            specialties: specialtiesMap[psy.name] || ['Psicología General'],
+            about: psy.bio || 'Psicólogo profesional con experiencia en diversas áreas.',
+          };
+        });
+
+        this.psychologists.set(uiPsychologists);
+
+        // Load appointments AFTER psychologists are loaded
+        this.loadAppointments();
+      },
+      error: (error) => {
+        console.error('Failed to load psychologists:', error);
+      },
+    });
+  }
+
+  loadAppointments(): void {
+    // Get current user from localStorage
+    const userData = localStorage.getItem('currentUser');
+    if (!userData) {
+      console.error('User not logged in');
+      return;
+    }
+    const user = JSON.parse(userData);
+
+    // Load appointments from backend
+    this.appointmentService.getAppointmentsByEmployeeId(user.id).subscribe({
+      next: (backendAppointments: BackendAppointment[]) => {
+        console.log('Loaded appointments from backend:', backendAppointments);
+
+        // Convert backend appointments to UI format
+        const uiAppointments: Appointment[] = backendAppointments.map((apt) => {
+          const dateTime = new Date(apt.appointmentDateTime);
+          const date = dateTime.toISOString().split('T')[0];
+          const time = dateTime.toTimeString().slice(0, 5);
+
+          // Find psychologist name from loaded psychologists
+          const psychologist = this.psychologists().find((p) => p.id === apt.psychologistId);
+          const psychologistName = psychologist?.name || `Psychologist ${apt.psychologistId}`;
+
+          return {
+            id: apt.id,
+            psychologist: psychologistName,
+            date: date,
+            time: time,
+            type: 'Videollamada',
+            status: this.mapStatus(apt.status),
+          };
+        });
+
+        this.appointments.set(uiAppointments);
+      },
+      error: (error) => {
+        console.error('Failed to load appointments:', error);
+      },
+    });
+  }
+
+  private mapStatus(backendStatus: string): 'upcoming' | 'past' | 'cancelled' {
+    if (backendStatus === 'CANCELLED') {
+      return 'cancelled';
+    }
+
+    // For now, treat all non-cancelled appointments as upcoming
+    // TODO: Implement proper date comparison
+    return 'upcoming';
+  }
+
+  setActiveTab(tab: 'psychologists' | 'appointments') {
     this.activeTab.set(tab);
   }
 
   setFilter(filter: string) {
+    console.log('Setting filter to:', filter);
     this.selectedFilter.set(filter);
+    console.log('Current filter:', this.selectedFilter());
+    console.log('Total psychologists:', this.psychologists().length);
+
+    // Log which psychologists match
+    this.psychologists().forEach((p) => {
+      const matches = this.matchesFilter(p);
+      console.log(`${p.name} - Specialties: ${p.specialties.join(', ')} - Matches: ${matches}`);
+    });
   }
 
-  get filteredPsychologists() {
+  openAppointmentModal(psychologist?: Psychologist) {
+    if (psychologist) {
+      this.selectedPsychologistForBooking.set(psychologist);
+    }
+    this.showAppointmentModal.set(true);
+  }
+
+  closeAppointmentModal() {
+    this.showAppointmentModal.set(false);
+    this.selectedPsychologistForBooking.set(null);
+  }
+
+  onAppointmentCreated(appointmentData: AppointmentData) {
+    console.log('Appointment created:', appointmentData);
+    const newAppointment: Appointment = {
+      id: this.appointments().length + 1,
+      psychologist: appointmentData.psychologistName,
+      date: appointmentData.date,
+      time: appointmentData.time,
+      type: appointmentData.type === 'video' ? 'Videollamada' : appointmentData.type,
+      status: 'upcoming',
+    };
+    this.appointments.update((apps) => [...apps, newAppointment]);
+  }
+
+  // Method to check if psychologist matches current filter AND search query
+  matchesFilter(psychologist: Psychologist): boolean {
     const filter = this.selectedFilter();
-    const query = this.searchQuery().toLowerCase();
+    const query = this.searchQuery().toLowerCase().trim();
 
-    return this.psychologists().filter((p) => {
-      const matchesFilter =
-        filter === 'all' ||
-        p.specialties.some((s) => s.toLowerCase().includes(filter.toLowerCase()));
-      const matchesSearch =
-        query === '' ||
-        p.name.toLowerCase().includes(query) ||
-        p.specialty.toLowerCase().includes(query);
-
-      return matchesFilter && matchesSearch;
+    console.log(`Checking ${psychologist.name}:`, {
+      filter,
+      query,
+      specialties: psychologist.specialties,
     });
+
+    // Check filter match
+    let matchesFilterCriteria = true;
+    if (filter !== 'all') {
+      // Map filter keys to Spanish specialty names (case-insensitive)
+      const filterMap: { [key: string]: string[] } = {
+        workStress: ['estrés laboral', 'estres laboral', 'burnout'],
+        anxiety: ['ansiedad'],
+        burnout: ['burnout'],
+        mindfulness: ['mindfulness', 'meditación', 'meditacion'],
+      };
+
+      if (filterMap[filter]) {
+        matchesFilterCriteria = psychologist.specialties.some((s) => {
+          const specialty = s.toLowerCase();
+          const matches = filterMap[filter].some((f) => specialty.includes(f));
+          console.log(`  Specialty "${s}" (${specialty}) matches filter "${filter}":`, matches);
+          return matches;
+        });
+        console.log(`  Overall filter match:`, matchesFilterCriteria);
+      }
+    }
+
+    // Check search query match
+    let matchesSearchQuery = true;
+    if (query !== '') {
+      matchesSearchQuery =
+        psychologist.name.toLowerCase().includes(query) ||
+        psychologist.specialty.toLowerCase().includes(query) ||
+        psychologist.specialties.some((s) => s.toLowerCase().includes(query));
+      console.log(`  Search query match:`, matchesSearchQuery);
+    }
+
+    const finalResult = matchesFilterCriteria && matchesSearchQuery;
+    console.log(`  Final result for ${psychologist.name}:`, finalResult);
+    return finalResult;
+  }
+
+  // Get specialty tags for data attribute
+  getSpecialtyTags(psychologist: Psychologist): string {
+    return psychologist.specialties.map((s) => s.toLowerCase()).join(',');
   }
 
   get upcomingAppointments() {
@@ -176,5 +278,63 @@ export class Coaching {
 
   get pastAppointments() {
     return this.appointments().filter((a) => a.status === 'past');
+  }
+
+  openProfileModal(psychologist: Psychologist): void {
+    this.selectedPsychologistForProfile.set(psychologist);
+    this.showProfileModal.set(true);
+  }
+
+  closeProfileModal(): void {
+    this.showProfileModal.set(false);
+    this.selectedPsychologistForProfile.set(null);
+  }
+
+  onBookFromProfile(psychologist: Psychologist): void {
+    this.closeProfileModal();
+    this.openAppointmentModal(psychologist);
+  }
+
+  // Cancel appointment
+  cancelAppointment(appointmentId: number): void {
+    const reason = prompt('Please provide a reason for cancellation:');
+    if (!reason) return;
+
+    this.appointmentService
+      .cancelAppointment(appointmentId, { cancellationReason: reason })
+      .subscribe({
+        next: () => {
+          console.log('Appointment cancelled successfully');
+          this.loadAppointments();
+        },
+        error: (error) => {
+          console.error('Error cancelling appointment:', error);
+          alert('Failed to cancel appointment. Please try again.');
+        },
+      });
+  }
+
+  // Reschedule appointment
+  rescheduleAppointment(appointmentId: number): void {
+    const newDate = prompt('Enter new date (YYYY-MM-DD):');
+    if (!newDate) return;
+
+    const newTime = prompt('Enter new time (HH:MM):');
+    if (!newTime) return;
+
+    const newDateTime = `${newDate}T${newTime}:00`;
+
+    this.appointmentService
+      .rescheduleAppointment(appointmentId, { appointmentDateTime: newDateTime })
+      .subscribe({
+        next: () => {
+          console.log('Appointment rescheduled successfully');
+          this.loadAppointments();
+        },
+        error: (error) => {
+          console.error('Error rescheduling appointment:', error);
+          alert('Failed to reschedule appointment. Please try again.');
+        },
+      });
   }
 }

@@ -1,10 +1,13 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, tap, catchError, of } from 'rxjs';
+import { API_CONFIG } from '../config/api.config';
 
 export interface User {
   id: number;
   email: string;
   name: string;
+  role?: string;
 }
 
 export interface LoginCredentials {
@@ -18,76 +21,128 @@ export interface RegisterCredentials {
   password: string;
 }
 
+export interface AuthenticationResponse {
+  id: number;
+  email: string;
+  name: string;
+  token: string;
+  role: string;
+}
+
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
+  private http = inject(HttpClient);
+  private readonly API_URL = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.auth}`;
+
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor() {
-    // Verificar si hay un usuario guardado en localStorage
+    // Check if there's a saved user in localStorage
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
       this.currentUserSubject.next(JSON.parse(savedUser));
     }
   }
 
-  login(credentials: LoginCredentials): boolean {
-    // Simulación simple de login - en una app real esto sería una llamada HTTP
-    const users = this.getStoredUsers();
-    const user = users.find(u => u.email === credentials.email && u.password === credentials.password);
-    
-    if (user) {
-      const userData = { id: user.id, email: user.email, name: user.name };
-      this.currentUserSubject.next(userData);
-      localStorage.setItem('currentUser', JSON.stringify(userData));
-      return true;
-    }
-    return false;
+  /**
+   * Login user with backend API
+   * @param credentials Login credentials
+   * @returns Observable with authentication response
+   */
+  login(credentials: LoginCredentials): Observable<AuthenticationResponse> {
+    return this.http.post<AuthenticationResponse>(`${this.API_URL}/login`, credentials).pipe(
+      tap((response) => {
+        if (response) {
+          const userData: User = {
+            id: response.id,
+            email: response.email,
+            name: response.name,
+            role: response.role,
+          };
+          this.currentUserSubject.next(userData);
+          localStorage.setItem('currentUser', JSON.stringify(userData));
+          localStorage.setItem('authToken', response.token);
+        }
+      })
+      // Removed catchError - let errors propagate to component for proper handling
+    );
   }
 
-  register(credentials: RegisterCredentials): boolean {
-    // Verificar si el email ya existe
-    const users = this.getStoredUsers();
-    if (users.find(u => u.email === credentials.email)) {
-      return false;
-    }
-
-    // Crear nuevo usuario
-    const newUser = {
-      id: Date.now(), // ID simple basado en timestamp
-      name: credentials.name,
-      email: credentials.email,
-      password: credentials.password
-    };
-
-    users.push(newUser);
-    localStorage.setItem('users', JSON.stringify(users));
-
-    // Auto-login después del registro
-    const userData = { id: newUser.id, email: newUser.email, name: newUser.name };
-    this.currentUserSubject.next(userData);
-    localStorage.setItem('currentUser', JSON.stringify(userData));
-    
-    return true;
+  /**
+   * Register new user with backend API
+   * @param credentials Registration credentials
+   * @returns Observable with authentication response
+   */
+  register(credentials: RegisterCredentials): Observable<AuthenticationResponse> {
+    return this.http.post<AuthenticationResponse>(`${this.API_URL}/register`, credentials).pipe(
+      tap((response) => {
+        if (response) {
+          const userData: User = {
+            id: response.id,
+            email: response.email,
+            name: response.name,
+            role: response.role,
+          };
+          this.currentUserSubject.next(userData);
+          localStorage.setItem('currentUser', JSON.stringify(userData));
+          localStorage.setItem('authToken', response.token);
+        }
+      })
+      // Removed catchError - let errors propagate to component for proper handling
+    );
   }
 
+  /**
+   * Logout current user
+   */
   logout(): void {
     this.currentUserSubject.next(null);
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('authToken');
   }
 
+  /**
+   * Check if user is authenticated
+   * @returns True if user is authenticated
+   */
   isAuthenticated(): boolean {
     return this.currentUserSubject.value !== null;
   }
 
+  /**
+   * Get current user
+   * @returns Current user or null
+   */
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
 
-  private getStoredUsers(): any[] {
-    const users = localStorage.getItem('users');
-    return users ? JSON.parse(users) : [];
+  /**
+   * Get authentication token
+   * @returns Auth token or null
+   */
+  getAuthToken(): string | null {
+    return localStorage.getItem('authToken');
+  }
+
+  /**
+   * Check if current user is a psychologist
+   * @returns True if user is a psychologist
+   */
+  isPsychologist(): boolean {
+    const user = this.getCurrentUser();
+    return user?.role === 'PSYCHOLOGIST';
+  }
+
+  /**
+   * Check if current user is an employee
+   * @returns True if user is an employee
+   */
+  isEmployee(): boolean {
+    const user = this.getCurrentUser();
+    return user?.role === 'EMPLOYEE' || !user?.role;
   }
 }

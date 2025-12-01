@@ -6,7 +6,14 @@
     "pricing": "Planes",
     "faq": "Preguntas frecuentes",
     "download": "Descargar",
-    "toggleNav": "Abrir navegación"
+    "toggleNav": "Abrir navegación",
+    "home": "Inicio",
+    "assessment": "Evaluación",
+    "coaching": "Coaching",
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "profileSettings": "Configuración de Perfil",
+    "logout": "Cerrar sesión"
   },
   "hero": {
     "badge": "Nuevo • Estrés & Bienestar",
@@ -183,6 +190,14 @@
       "languages": "Idiomas",
       "nextAvailable": "Próxima disponibilidad"
     },
+    "profile": {
+      "specialties": "Especialidades",
+      "about": "Acerca de",
+      "years": "años",
+      "experience": "Experiencia",
+      "languages": "Idiomas",
+      "close": "Cerrar"
+    },
     "community": {
       "title": "Comunidad de apoyo",
       "description": "Comparte experiencias, encuentra motivación y aprende de otros en tu camino hacia el bienestar.",
@@ -236,5 +251,315 @@
       "confirmBooking": "Confirmar reserva",
       "writeReview": "Escribir reseña"
     }
+  },
+  "home": {
+    "greeting": {
+      "morning": "Buenos días",
+      "afternoon": "Buenas tardes",
+      "evening": "Buenas noches"
+    },
+    "welcome": {
+      "subtitle": "Tu espacio personal de bienestar",
+      "bookSession": "Agendar sesión"
+    },
+    "stressLevel": {
+      "title": "Nivel de Estrés Actual",
+      "description": "Basado en tu última evaluación",
+      "level": "nivel",
+      "low": "Bajo (0-33)",
+      "moderate": "Tu nivel de estrés es moderado",
+      "moderateLabel": "Moderado (34-66)",
+      "high": "Alto (67-100)",
+      "recommendation": "Te recomendamos realizar ejercicios de respiración y considerar una sesión con un especialista.",
+      "takeAssessment": "Realizar evaluación",
+      "viewHistory": "Ver historial"
+    },
+    "quickActions": {
+      "title": "Acciones Rápidas",
+      "assessment": {
+        "title": "Test de Estrés",
+        "description": "Evalúa tu nivel actual de estrés"
+      },
+      "breathing": {
+        "title": "Ejercicios de Respiración",
+        "description": "Comienza una sesión de relajación"
+      },
+      "reminders": {
+        "title": "Recordatorios",
+        "description": "Configura alertas de bienestar"
+      }
+    },
+    "navigation": {
+      "title": "Explora",
+      "routines": {
+        "title": "Rutinas Diarias",
+        "description": "Gestiona tus hábitos de bienestar"
+      },
+      "community": {
+        "title": "Comunidad",
+        "description": "Conecta con especialistas y otros usuarios"
+      },
+      "reports": {
+        "title": "Reportes",
+        "description": "Visualiza tu progreso y estadísticas"
+      }
+    },
+    "sidebar": {
+      "upcomingAppointments": "Próximas Citas",
+      "joinSession": "Unirse a sesión",
+      "viewAll": "Ver todas",
+      "wellnessTips": {
+        "title": "Consejo de Bienestar",
+        "tip1": "Toma 5 minutos para practicar respiración profunda. Puede reducir significativamente tu nivel de estrés.",
+        "tryNow": "Probar ahora"
+      },
+      "recentActivity": "Actividad Reciente"
+    },
+    "activity": {
+      "appointmentCompleted": "Sesión completada con éxito",
+      "breathingCompleted": "Ejercicio de respiración completado"
+    }
+  },
+  "modals": {
+    "stressAssessment": {
+      "title": "Evaluación de Estrés",
+      "progress": "Progreso",
+      "questionCounter": "Pregunta {{current}} de {{total}}",
+      "scoreLabel": "Puntuación",
+      "submit": "Enviar Evaluación",
+      "retake": "Repetir Evaluación",
+      "saveResults": "Guardar Resultados",
+      "recommendationsTitle": "Recomendaciones Personalizadas",
+      "categories": {
+        "work": "Estrés Laboral",
+        "sleep": "Calidad del Sueño",
+        "physical": "Síntomas Físicos",
+        "emotional": "Estado Emocional"
+      },
+      "options": {
+        "never": "Nunca",
+        "rarely": "Raramente",
+        "sometimes": "A veces",
+        "often": "Frecuentemente",
+        "always": "Siempre"
+      },
+      "questions": {
+        "work_1": "¿Te sientes abrumado/a por la cantidad de trabajo?",
+        "work_2": "¿Tienes dificultad para desconectar del trabajo fuera del horario laboral?",
+        "work_3": "¿Sientes que no tienes control sobre tus tareas laborales?",
+        "work_4": "¿Experimentas conflictos con compañeros o superiores?",
+        "work_5": "¿Te preocupa el rendimiento o la seguridad de tu empleo?",
+        "sleep_1": "¿Tienes dificultad para conciliar el sueño?",
+        "sleep_2": "¿Te despiertas durante la noche y te cuesta volver a dormir?",
+        "sleep_3": "¿Te sientes cansado/a al despertar, incluso después de dormir?",
+        "physical_1": "¿Experimentas dolores de cabeza frecuentes?",
+        "physical_2": "¿Sientes tensión muscular o dolor en cuello/hombros?",
+        "physical_3": "¿Tienes problemas digestivos o malestar estomacal?",
+        "physical_4": "¿Notas cambios en tu apetito (comer más o menos de lo habitual)?",
+        "emotional_1": "¿Te sientes ansioso/a o nervioso/a sin razón aparente?",
+        "emotional_2": "¿Experimentas cambios de humor o irritabilidad?",
+        "emotional_3": "¿Te sientes triste, desmotivado/a o sin energía?"
+      },
+      "results": {
+        "level": {
+          "low": "Nivel de Estrés Bajo",
+          "moderate": "Nivel de Estrés Moderado",
+          "high": "Nivel de Estrés Alto"
+        },
+        "description": {
+          "low": "Tu nivel de estrés está dentro de un rango saludable. Continúa con tus hábitos de bienestar.",
+          "moderate": "Tu nivel de estrés es moderado. Es importante tomar medidas para manejarlo antes de que aumente.",
+          "high": "Tu nivel de estrés es alto. Te recomendamos buscar apoyo profesional y aplicar técnicas de manejo del estrés."
+        }
+      },
+      "recommendations": {
+        "low_1": "Mantén tus rutinas de ejercicio y descanso actuales",
+        "low_2": "Practica técnicas de mindfulness regularmente",
+        "low_3": "Continúa cultivando relaciones sociales positivas",
+        "moderate_1": "Incorpora ejercicios de respiración profunda diariamente",
+        "moderate_2": "Establece límites claros entre trabajo y vida personal",
+        "moderate_3": "Considera hablar con un profesional sobre técnicas de manejo del estrés",
+        "moderate_4": "Prioriza actividades que te ayuden a relajarte y desconectar",
+        "high_1": "Programa una consulta con un psicólogo especializado en manejo del estrés",
+        "high_2": "Implementa pausas regulares durante el día para ejercicios de relajación",
+        "high_3": "Evalúa tu carga de trabajo y comunica tus necesidades a tu supervisor",
+        "high_4": "Considera técnicas como meditación, yoga o terapia cognitivo-conductual"
+      }
+    }
+  },
+  "common": {
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "submit": "Enviar",
+    "confirm": "Confirmar"
+  },
+  "tracking": {
+    "title": "Evaluación y Seguimiento",
+    "subtitle": "Monitorea tu viaje de salud mental y rastrea tu progreso a lo largo del tiempo",
+    "newAssessment": "Nueva Evaluación",
+    "latestScore": "Puntuación Reciente",
+    "trendLabel": "Tendencia",
+    "daysSince": "Días Desde Última",
+    "totalAssessments": "Total de Evaluaciones",
+    "recommendationsTitle": "Recomendaciones Personalizadas",
+    "trendChart": "Tendencia de Nivel de Estrés",
+    "categoryChart": "Desglose por Categoría",
+    "historyTitle": "Historial de Evaluaciones",
+    "reminderTitle": "Recordatorios de Evaluación",
+    "reminderDescription": "Configura recordatorios recurrentes para rastrear tus niveles de estrés regularmente",
+    "configureReminders": "Configurar Recordatorios",
+    "noChartData": "No hay datos disponibles para gráficos",
+    "noHistory": "Aún no hay evaluaciones. ¡Realiza tu primera evaluación para comenzar a rastrear!",
+    "level": {
+      "low": "Bajo",
+      "moderate": "Moderado",
+      "high": "Alto"
+    },
+    "trend": {
+      "improving": "Mejorando",
+      "stable": "Estable",
+      "declining": "Empeorando",
+      "insufficient_data": "Datos Insuficientes"
+    },
+    "filter": {
+      "week": "Semana",
+      "month": "Mes",
+      "quarter": "3 Meses",
+      "all": "Todo"
+    },
+    "table": {
+      "date": "Fecha",
+      "score": "Puntuación",
+      "level": "Nivel",
+      "categories": "Categorías",
+      "actions": "Acciones"
+    },
+    "recommendations": {
+      "noData": "Realiza tu primera evaluación para recibir recomendaciones personalizadas",
+      "improving": "¡Excelente progreso! Tus niveles de estrés están mejorando. Continúa con tus estrategias actuales.",
+      "stable": "Tus niveles de estrés son estables. Continúa con tus prácticas de bienestar actuales.",
+      "declining": "Tus niveles de estrés están aumentando. Considera programar una sesión con un especialista y aumentar tus actividades de autocuidado.",
+      "highStress": "Tu nivel de estrés es alto. Te recomendamos encarecidamente hablar con un profesional de salud mental.",
+      "moderateStress": "Tu nivel de estrés es moderado. Enfócate en técnicas de manejo del estrés y autocuidado regular.",
+      "lowStress": "Tu nivel de estrés es bajo. Mantén tus hábitos saludables y continúa monitoreando tu bienestar.",
+      "category": {
+        "work": "El estrés laboral es tu categoría más alta. Considera establecer mejores límites y tomar descansos regulares.",
+        "sleep": "La calidad del sueño está afectando tu estrés. Establece una rutina de sueño consistente y crea un ambiente relajante para dormir.",
+        "physical": "Los síntomas físicos son prominentes. Incorpora ejercicio regular y técnicas de relajación en tu rutina.",
+        "emotional": "El bienestar emocional necesita atención. Considera prácticas de mindfulness y conectar con personas de apoyo."
+      }
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Iniciar Sesión",
+      "email": "Email",
+      "emailPlaceholder": "Ingresa tu email",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Ingresa tu contraseña",
+      "submit": "Ingresar",
+      "loading": "Cargando...",
+      "noAccount": "¿No tienes cuenta?",
+      "registerLink": "Regístrate"
+    },
+    "register": {
+      "title": "Registrarse",
+      "name": "Nombre",
+      "namePlaceholder": "Ingresa tu nombre",
+      "email": "Email",
+      "emailPlaceholder": "Ingresa tu email",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Crea una contraseña",
+      "confirmPassword": "Confirmar Contraseña",
+      "confirmPasswordPlaceholder": "Repite tu contraseña",
+      "submit": "Registrarse",
+      "loading": "Cargando...",
+      "hasAccount": "¿Ya tienes cuenta?",
+      "loginLink": "Inicia sesión"
+    }
+  },
+  "profile": {
+    "title": "Configuración de Perfil",
+    "subtitle": "Gestiona la configuración y preferencias de tu cuenta",
+    "backToHome": "Volver al Inicio",
+    "tabs": {
+      "profile": "Información del Perfil",
+      "password": "Contraseña y Seguridad",
+      "notifications": "Notificaciones"
+    },
+    "profileInfo": {
+      "title": "Información del Perfil",
+      "editProfile": "Editar Perfil",
+      "fullName": "Nombre Completo",
+      "email": "Correo Electrónico",
+      "phone": "Número de Teléfono",
+      "phonePlaceholder": "+1 (555) 123-4567",
+      "district": "Distrito/Ciudad",
+      "districtPlaceholder": "Ingresa tu distrito",
+      "bio": "Biografía",
+      "bioPlaceholder": "Cuéntanos sobre ti...",
+      "bioCounter": "caracteres",
+      "cancel": "Cancelar",
+      "saveChanges": "Guardar Cambios",
+      "required": "*"
+    },
+    "security": {
+      "title": "Contraseña y Seguridad",
+      "currentPassword": "Contraseña Actual",
+      "newPassword": "Nueva Contraseña",
+      "confirmPassword": "Confirmar Nueva Contraseña",
+      "passwordHint": "La contraseña debe tener al menos 6 caracteres",
+      "passwordMismatch": "Las contraseñas no coinciden",
+      "changePassword": "Cambiar Contraseña",
+      "dangerZone": "Zona de Peligro",
+      "dangerZoneWarning": "Una vez que elimines tu cuenta, no hay vuelta atrás. Por favor, ten certeza.",
+      "deleteAccount": "Eliminar Cuenta"
+    },
+    "notifications": {
+      "title": "Preferencias de Notificación",
+      "subtitle": "Elige cómo quieres recibir notificaciones y actualizaciones",
+      "email": {
+        "title": "Notificaciones por Email",
+        "description": "Recibir notificaciones por correo electrónico"
+      },
+      "sms": {
+        "title": "Notificaciones por SMS",
+        "description": "Recibir notificaciones por mensaje de texto"
+      },
+      "weeklyReports": {
+        "title": "Reportes Semanales de Progreso",
+        "description": "Recibir resúmenes semanales de tu progreso de salud mental"
+      },
+      "appointmentReminders": {
+        "title": "Recordatorios de Citas",
+        "description": "Recibir recordatorios antes de las citas programadas"
+      }
+    }
+  },
+  "reports": {
+    "title": "Mis Reportes",
+    "subtitle": "Visualiza tu progreso y estadísticas de salud mental",
+    "generateReport": "Generar Reporte",
+    "generating": "Generando...",
+    "noReports": "No hay reportes disponibles",
+    "noReportsDescription": "Genera tu primer reporte para ver tus estadísticas",
+    "reportType": "Tipo de Reporte",
+    "types": {
+      "monthly": "Mensual",
+      "quarterly": "Trimestral",
+      "annual": "Anual",
+      "custom": "Personalizado"
+    },
+    "stats": {
+      "totalAppointments": "Citas Totales",
+      "completedAppointments": "Completadas",
+      "totalAssessments": "Evaluaciones",
+      "averageScore": "Puntuación",
+      "progress": "Progreso"
+    },
+    "summary": "Resumen"
   }
 }

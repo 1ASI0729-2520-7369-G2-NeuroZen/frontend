@@ -1,0 +1,172 @@
+<div class="reports-page">
+  <!-- Hero Section -->
+  <section class="hero-section bg-gradient text-white py-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <h1 class="display-5 fw-bold">{{ 'reports.title' | translate }}</h1>
+          <p class="lead">{{ 'reports.subtitle' | translate }}</p>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+          <button class="btn btn-light btn-lg" (click)="generateReport()" [disabled]="generatingReport()">
+            <i class="fa-solid fa-plus me-2"></i>
+            @if (generatingReport()) {
+            <span>
+              <span class="spinner-border spinner-border-sm me-2"></span>
+              Generando...
+            </span>
+            } @else {
+            <span>Generar Reporte</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Report Type Selection -->
+  <section class="py-4 bg-white border-bottom">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <h5 class="mb-3">Tipo de Reporte:</h5>
+          <div class="btn-group" role="group">
+            @for (type of reportTypes; track type) {
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              [class.active]="selectedReportType() === type"
+              (click)="selectReportType(type)"
+            >
+              {{ getReportTypeLabel(type) }}
+            </button>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reports List -->
+  <section class="py-5">
+    <div class="container">
+      @if (loading()) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3 text-muted">Cargando reportes...</p>
+      </div>
+      } @else if (error()) {
+      <div class="alert alert-danger" role="alert">
+        <i class="fa-solid fa-exclamation-triangle me-2"></i>
+        {{ error() }}
+      </div>
+      } @else if (reports().length === 0) {
+      <div class="text-center py-5">
+        <i class="fa-solid fa-file-circle-exclamation fa-4x text-muted mb-4"></i>
+        <h4>No hay reportes disponibles</h4>
+        <p class="text-muted">Genera tu primer reporte para ver tus estadísticas</p>
+        <button class="btn btn-primary mt-3" (click)="generateReport()">
+          <i class="fa-solid fa-plus me-2"></i>
+          Generar Reporte
+        </button>
+      </div>
+      } @else {
+      <div class="row g-4">
+        @for (report of reports(); track report.id) {
+        <div class="col-md-6 col-lg-4">
+          <div class="card shadow-sm h-100 hover-lift">
+            <div class="card-header bg-primary text-white">
+              <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                  <i class="fa-solid fa-file-lines me-2"></i>
+                  {{ getReportTypeLabel(report.reportType) }}
+                </h5>
+                <span class="badge bg-light text-primary">
+                  #{{ report.id }}
+                </span>
+              </div>
+            </div>
+            <div class="card-body">
+              <p class="text-muted mb-3">
+                <i class="fa-solid fa-calendar me-2"></i>
+                {{ formatDate(report.reportDate) }}
+              </p>
+
+              <!-- Statistics -->
+              <div class="row g-3 mb-3">
+                <div class="col-6">
+                  <div class="stat-box">
+                    <div class="stat-icon text-primary">
+                      <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-value">{{ report.totalAppointments || 0 }}</div>
+                    <div class="stat-label">Citas Totales</div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="stat-box">
+                    <div class="stat-icon text-success">
+                      <i class="fa-solid fa-check-circle"></i>
+                    </div>
+                    <div class="stat-value">{{ report.completedAppointments || 0 }}</div>
+                    <div class="stat-label">Completadas</div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="stat-box">
+                    <div class="stat-icon text-info">
+                      <i class="fa-solid fa-clipboard-list"></i>
+                    </div>
+                    <div class="stat-value">{{ report.totalAssessments || 0 }}</div>
+                    <div class="stat-label">Evaluaciones</div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="stat-box">
+                    <div class="stat-icon" [ngClass]="getScoreClass(report.averageScore)">
+                      <i class="fa-solid fa-star"></i>
+                    </div>
+                    <div class="stat-value" [ngClass]="getScoreClass(report.averageScore)">
+                      {{ report.averageScore ? report.averageScore.toFixed(1) : 'N/A' }}
+                    </div>
+                    <div class="stat-label">Puntuación</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Progress Bar -->
+              @if (report.totalAppointments && report.totalAppointments > 0) {
+              <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                  <small class="text-muted">Progreso</small>
+                  <small class="text-muted">{{ getProgressPercentage(report) }}%</small>
+                </div>
+                <div class="progress">
+                  <div
+                    class="progress-bar bg-success"
+                    role="progressbar"
+                    [style.width.%]="getProgressPercentage(report)"
+                  ></div>
+                </div>
+              </div>
+              }
+
+              <!-- Summary -->
+              @if (report.summary) {
+              <div class="report-summary">
+                <h6 class="mb-2">Resumen:</h6>
+                <p class="small text-muted mb-0">{{ report.summary }}</p>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </div>
+  </section>
+</div>
+

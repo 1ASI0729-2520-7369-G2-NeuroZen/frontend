@@ -10,21 +10,17 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
   loginForm: FormGroup;
   errorMessage: string = '';
   isLoading: boolean = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router
-  ) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(6)]],
     });
   }
 
@@ -34,15 +30,32 @@ export class LoginComponent {
       this.errorMessage = '';
 
       const credentials = this.loginForm.value;
-      const success = this.authService.login(credentials);
+      this.authService.login(credentials).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          // Login successful - redirect based on user role
+          if (response.role === 'PSYCHOLOGIST') {
+            this.router.navigate(['/psychologist-dashboard']);
+          } else {
+            this.router.navigate(['/home']);
+          }
+        },
+        error: (error) => {
+          this.isLoading = false;
+          console.error('Login error:', error);
 
-      if (success) {
-        this.router.navigate(['/coaching']);
-      } else {
-        this.errorMessage = 'Email o contraseña incorrectos';
-      }
-
-      this.isLoading = false;
+          // Handle different error types
+          if (error.status === 401) {
+            this.errorMessage = 'Email o contraseña incorrectos';
+          } else if (error.status === 0) {
+            // Network error or CORS issue
+            this.errorMessage =
+              'No se puede conectar al servidor. Por favor, verifica tu conexión.';
+          } else {
+            this.errorMessage = 'Error al iniciar sesión. Por favor, intenta de nuevo.';
+          }
+        },
+      });
     } else {
       this.markFormGroupTouched();
     }
@@ -53,7 +66,7 @@ export class LoginComponent {
   }
 
   private markFormGroupTouched(): void {
-    Object.keys(this.loginForm.controls).forEach(key => {
+    Object.keys(this.loginForm.controls).forEach((key) => {
       const control = this.loginForm.get(key);
       control?.markAsTouched();
     });

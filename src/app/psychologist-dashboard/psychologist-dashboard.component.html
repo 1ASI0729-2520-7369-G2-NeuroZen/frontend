@@ -1,0 +1,140 @@
+<div class="psychologist-dashboard">
+  <div class="dashboard-header">
+    <h1>Panel del Psicólogo</h1>
+    <p class="subtitle">Gestiona tus citas y pacientes</p>
+  </div>
+
+  <div class="tabs">
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'appointments'"
+      (click)="setActiveTab('appointments')"
+    >
+      <i class="fas fa-calendar-check"></i>
+      Mis Citas
+    </button>
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'patients'"
+      (click)="setActiveTab('patients')"
+    >
+      <i class="fas fa-users"></i>
+      Mis Pacientes
+    </button>
+  </div>
+
+  <div class="tab-content" *ngIf="!loading">
+    <!-- Appointments Tab -->
+    <div *ngIf="activeTab === 'appointments'" class="appointments-section">
+      <div class="section-header">
+        <h2>Citas Programadas</h2>
+        <span class="count-badge">{{ appointments.length }} citas</span>
+      </div>
+
+      <div *ngIf="appointments.length === 0" class="empty-state">
+        <i class="fas fa-calendar-times"></i>
+        <p>No tienes citas programadas</p>
+      </div>
+
+      <div class="appointments-grid" *ngIf="appointments.length > 0">
+        <div *ngFor="let appointment of appointments" class="appointment-card">
+          <div class="appointment-header">
+            <div class="appointment-date">
+              <i class="fas fa-calendar"></i>
+              {{ formatDate(appointment.appointmentDateTime) }}
+            </div>
+            <span class="status-badge" [ngClass]="getStatusClass(appointment.status)">
+              {{ appointment.status }}
+            </span>
+          </div>
+
+          <div class="appointment-body">
+            <div class="patient-info">
+              <i class="fas fa-user"></i>
+              <span>{{ getPatientName(appointment.employeeId) }}</span>
+            </div>
+
+            <div class="appointment-id">
+              <i class="fas fa-hashtag"></i>
+              <span>Cita #{{ appointment.id }}</span>
+            </div>
+
+            <div *ngIf="appointment.notes" class="appointment-notes">
+              <i class="fas fa-sticky-note"></i>
+              <span>{{ appointment.notes }}</span>
+            </div>
+
+            <div *ngIf="appointment.cancellationReason" class="cancellation-reason">
+              <i class="fas fa-exclamation-circle"></i>
+              <span>Cancelado: {{ appointment.cancellationReason }}</span>
+            </div>
+          </div>
+
+          <div class="appointment-actions" *ngIf="appointment.status === 'SCHEDULED'">
+            <button class="btn-confirm" (click)="confirmAppointment(appointment.id)">
+              <i class="fas fa-check"></i>
+              Confirmar
+            </button>
+          </div>
+
+          <div class="appointment-actions" *ngIf="appointment.status === 'CONFIRMED'">
+            <button class="btn-start" (click)="startAppointment(appointment.id)">
+              <i class="fas fa-play"></i>
+              Iniciar
+            </button>
+          </div>
+
+          <div class="appointment-actions" *ngIf="appointment.status === 'IN_PROGRESS'">
+            <button class="btn-complete" (click)="completeAppointment(appointment.id)">
+              <i class="fas fa-check-circle"></i>
+              Completar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Patients Tab -->
+    <div *ngIf="activeTab === 'patients'" class="patients-section">
+      <div class="section-header">
+        <h2>Mis Pacientes</h2>
+        <span class="count-badge">{{ patients.length }} pacientes</span>
+      </div>
+
+      <div *ngIf="patients.length === 0" class="empty-state">
+        <i class="fas fa-user-slash"></i>
+        <p>No tienes pacientes asignados</p>
+      </div>
+
+      <div class="patients-grid" *ngIf="patients.length > 0">
+        <div *ngFor="let patient of patients" class="patient-card">
+          <div class="patient-header">
+            <div class="patient-avatar">
+              <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="patient-info">
+              <h3>{{ patient.name }}</h3>
+              <p class="patient-email">{{ patient.email }}</p>
+            </div>
+          </div>
+
+          <div class="patient-stats">
+            <div class="stat">
+              <i class="fas fa-calendar-check"></i>
+              <span>{{ patient.appointmentCount }} citas</span>
+            </div>
+            <div class="stat" *ngIf="patient.lastAppointment">
+              <i class="fas fa-clock"></i>
+              <span>Última: {{ formatDate(patient.lastAppointment) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando datos...</p>
+  </div>
+</div>

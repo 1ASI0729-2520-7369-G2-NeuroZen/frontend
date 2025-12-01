@@ -29,6 +29,32 @@
       </button>
       <div class="collapse navbar-collapse" id="nav">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+          <!-- Navigation for authenticated users -->
+          @if (currentUser) { @if (isPsychologist()) {
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/psychologist-dashboard" routerLinkActive="active">
+              <i class="fa-solid fa-dashboard me-1"></i>Panel de Control
+            </a>
+          </li>
+          } @else {
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/home" routerLinkActive="active">
+              <i class="fa-solid fa-home me-1"></i>{{ 'header.home' | translate }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/assessment-tracking" routerLinkActive="active">
+              <i class="fa-solid fa-chart-line me-1"></i>{{ 'header.assessment' | translate }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/coaching" routerLinkActive="active">
+              <i class="fa-solid fa-users me-1"></i>{{ 'header.coaching' | translate }}
+            </a>
+          </li>
+          } }
+          <!-- Navigation for non-authenticated users -->
+          @if (!currentUser) {
           <li class="nav-item">
             <a class="nav-link" href="#features">{{ 'header.features' | translate }}</a>
           </li>
@@ -41,39 +67,49 @@
           <li class="nav-item">
             <a class="nav-link" href="#faq">{{ 'header.faq' | translate }}</a>
           </li>
+          }
           <li class="nav-item ms-lg-2">
             <app-lang-switch></app-lang-switch>
           </li>
           <!-- Opciones de autenticación -->
-          <ng-container *ngIf="!currentUser; else userMenu">
-            <li class="nav-item ms-lg-2">
-              <button class="btn btn-outline-primary btn-pill" (click)="goToLogin()">
-                login
-              </button>
-            </li>
-            <li class="nav-item ms-lg-2">
-              <button class="btn btn-primary btn-pill" (click)="goToRegister()">
-                register
-              </button>
-            </li>
-          </ng-container>
-          <ng-template #userMenu>
-            <li class="nav-item ms-lg-2">
-              <button class="btn btn-outline-primary btn-pill" (click)="goToCoaching()">
-                <i class="fa-solid fa-user me-2"></i>{{ currentUser?.name }}
-              </button>
-            </li>
-            <li class="nav-item ms-lg-2">
-              <button class="btn btn-outline-secondary btn-pill" (click)="logout()">
-                <i class="fa-solid fa-sign-out-alt me-2"></i>Logout
-              </button>
-            </li>
-          </ng-template>
+          @if (!currentUser) {
           <li class="nav-item ms-lg-2">
-            <a class="btn btn-dark btn-pill" href="#download"
-              ><i class="fa-solid fa-mobile-screen me-2"></i>{{ 'header.download' | translate }}</a
-            >
+            <button class="btn btn-outline-primary btn-pill" (click)="goToLogin()">
+              {{ 'header.login' | translate }}
+            </button>
           </li>
+          <li class="nav-item ms-lg-2">
+            <button class="btn btn-primary btn-pill" (click)="goToRegister()">
+              {{ 'header.register' | translate }}
+            </button>
+          </li>
+          } @else {
+          <li class="nav-item dropdown ms-lg-2">
+            <button
+              class="btn btn-outline-primary btn-pill dropdown-toggle"
+              type="button"
+              id="userDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="fa-solid fa-user me-2"></i>{{ currentUser.name }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li>
+                <a class="dropdown-item" routerLink="/profile-settings">
+                  <i class="fa-solid fa-user-gear me-2"></i
+                  >{{ 'header.profileSettings' | translate }}
+                </a>
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <a class="dropdown-item text-danger" (click)="logout()">
+                  <i class="fa-solid fa-sign-out-alt me-2"></i>{{ 'header.logout' | translate }}
+                </a>
+              </li>
+            </ul>
+          </li>
+          }
         </ul>
       </div>
     </div>

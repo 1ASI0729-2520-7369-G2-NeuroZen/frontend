@@ -1,0 +1,433 @@
+<div class="profile-settings-page">
+  <!-- Page Header -->
+  <section class="page-header py-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <h1 class="display-5 fw-bold mb-2">
+            <i class="fa-solid fa-user-gear me-3"></i>
+            {{ 'profile.title' | translate }}
+          </h1>
+          <p class="lead mb-0">{{ 'profile.subtitle' | translate }}</p>
+        </div>
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+          <button class="btn btn-outline-light" routerLink="/home">
+            <i class="fa-solid fa-arrow-left me-2"></i>
+            {{ 'profile.backToHome' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <div class="container py-5">
+    <!-- Success/Error Messages -->
+    @if (successMessage()) {
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="fa-solid fa-check-circle me-2"></i>
+      {{ successMessage() }}
+      <button type="button" class="btn-close" (click)="successMessage.set(null)"></button>
+    </div>
+    } @if (errorMessage()) {
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fa-solid fa-exclamation-circle me-2"></i>
+      {{ errorMessage() }}
+      <button type="button" class="btn-close" (click)="errorMessage.set(null)"></button>
+    </div>
+    }
+
+    <div class="row">
+      <!-- Sidebar Navigation -->
+      <div class="col-lg-3 mb-4">
+        <div class="card settings-nav">
+          <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+              <button
+                class="list-group-item list-group-item-action"
+                [class.active]="activeTab() === 'profile'"
+                (click)="setActiveTab('profile')"
+              >
+                <i class="fa-solid fa-user me-2"></i>
+                {{ 'profile.tabs.profile' | translate }}
+              </button>
+              <button
+                class="list-group-item list-group-item-action"
+                [class.active]="activeTab() === 'password'"
+                (click)="setActiveTab('password')"
+              >
+                <i class="fa-solid fa-lock me-2"></i>
+                {{ 'profile.tabs.password' | translate }}
+              </button>
+              <button
+                class="list-group-item list-group-item-action"
+                [class.active]="activeTab() === 'preferences'"
+                (click)="setActiveTab('preferences')"
+              >
+                <i class="fa-solid fa-bell me-2"></i>
+                {{ 'profile.tabs.notifications' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Info Card -->
+        <div class="card mt-4 user-info-card">
+          <div class="card-body text-center">
+            <div class="user-avatar mb-3">
+              <i class="fa-solid fa-user-circle"></i>
+            </div>
+            <h5 class="mb-1">{{ currentUser()?.name }}</h5>
+            <p class="text-muted small mb-0">{{ currentUser()?.email }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="col-lg-9">
+        <!-- Profile Information Tab -->
+        @if (activeTab() === 'profile') {
+        <div class="card settings-card">
+          <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+              <h4 class="mb-0">
+                <i class="fa-solid fa-user me-2"></i>
+                {{ 'profile.profileInfo.title' | translate }}
+              </h4>
+              @if (!isEditingProfile()) {
+              <button class="btn btn-primary" (click)="toggleEditProfile()">
+                <i class="fa-solid fa-edit me-2"></i>
+                {{ 'profile.profileInfo.editProfile' | translate }}
+              </button>
+              }
+            </div>
+          </div>
+          <div class="card-body">
+            <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="name" class="form-label"
+                    >{{ 'profile.profileInfo.fullName' | translate }}
+                    {{ 'profile.profileInfo.required' | translate }}</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="name"
+                    formControlName="name"
+                    [class.is-invalid]="getFieldError(profileForm, 'name')"
+                  />
+                  @if (getFieldError(profileForm, 'name')) {
+                  <div class="invalid-feedback">{{ getFieldError(profileForm, 'name') }}</div>
+                  }
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="email" class="form-label"
+                    >{{ 'profile.profileInfo.email' | translate }}
+                    {{ 'profile.profileInfo.required' | translate }}</label
+                  >
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    formControlName="email"
+                    [class.is-invalid]="getFieldError(profileForm, 'email')"
+                  />
+                  @if (getFieldError(profileForm, 'email')) {
+                  <div class="invalid-feedback">{{ getFieldError(profileForm, 'email') }}</div>
+                  }
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="phone" class="form-label">{{
+                    'profile.profileInfo.phone' | translate
+                  }}</label>
+                  <input
+                    type="tel"
+                    class="form-control"
+                    id="phone"
+                    formControlName="phone"
+                    [placeholder]="'profile.profileInfo.phonePlaceholder' | translate"
+                    [class.is-invalid]="getFieldError(profileForm, 'phone')"
+                  />
+                  @if (getFieldError(profileForm, 'phone')) {
+                  <div class="invalid-feedback">{{ getFieldError(profileForm, 'phone') }}</div>
+                  }
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="district" class="form-label">{{
+                    'profile.profileInfo.district' | translate
+                  }}</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="district"
+                    formControlName="district"
+                    [placeholder]="'profile.profileInfo.districtPlaceholder' | translate"
+                  />
+                </div>
+
+                <div class="col-12 mb-3">
+                  <label for="bio" class="form-label">{{
+                    'profile.profileInfo.bio' | translate
+                  }}</label>
+                  <textarea
+                    class="form-control"
+                    id="bio"
+                    formControlName="bio"
+                    rows="4"
+                    [placeholder]="'profile.profileInfo.bioPlaceholder' | translate"
+                    [class.is-invalid]="getFieldError(profileForm, 'bio')"
+                  ></textarea>
+                  @if (getFieldError(profileForm, 'bio')) {
+                  <div class="invalid-feedback">{{ getFieldError(profileForm, 'bio') }}</div>
+                  }
+                  <small class="text-muted"
+                    >{{ profileForm.get('bio')?.value?.length || 0 }}/500
+                    {{ 'profile.profileInfo.bioCounter' | translate }}</small
+                  >
+                </div>
+              </div>
+
+              @if (isEditingProfile()) {
+              <div class="d-flex gap-2 justify-content-end">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  (click)="toggleEditProfile()"
+                >
+                  <i class="fa-solid fa-times me-2"></i>
+                  {{ 'profile.profileInfo.cancel' | translate }}
+                </button>
+                <button type="submit" class="btn btn-primary" [disabled]="isSavingProfile()">
+                  @if (isSavingProfile()) {
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  }
+                  <i class="fa-solid fa-save me-2"></i>
+                  {{ 'profile.profileInfo.saveChanges' | translate }}
+                </button>
+              </div>
+              }
+            </form>
+          </div>
+        </div>
+        }
+
+        <!-- Password & Security Tab -->
+        @if (activeTab() === 'password') {
+        <div class="card settings-card">
+          <div class="card-header">
+            <h4 class="mb-0">
+              <i class="fa-solid fa-lock me-2"></i>
+              {{ 'profile.security.title' | translate }}
+            </h4>
+          </div>
+          <div class="card-body">
+            <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+              <div class="mb-3">
+                <label for="currentPassword" class="form-label"
+                  >{{ 'profile.security.currentPassword' | translate }}
+                  {{ 'profile.profileInfo.required' | translate }}</label
+                >
+                <input
+                  type="password"
+                  class="form-control"
+                  id="currentPassword"
+                  formControlName="currentPassword"
+                  [class.is-invalid]="getFieldError(passwordForm, 'currentPassword')"
+                />
+                @if (getFieldError(passwordForm, 'currentPassword')) {
+                <div class="invalid-feedback">
+                  {{ getFieldError(passwordForm, 'currentPassword') }}
+                </div>
+                }
+              </div>
+
+              <div class="mb-3">
+                <label for="newPassword" class="form-label"
+                  >{{ 'profile.security.newPassword' | translate }}
+                  {{ 'profile.profileInfo.required' | translate }}</label
+                >
+                <input
+                  type="password"
+                  class="form-control"
+                  id="newPassword"
+                  formControlName="newPassword"
+                  [class.is-invalid]="getFieldError(passwordForm, 'newPassword')"
+                />
+                @if (getFieldError(passwordForm, 'newPassword')) {
+                <div class="invalid-feedback">{{ getFieldError(passwordForm, 'newPassword') }}</div>
+                }
+                <small class="text-muted">{{ 'profile.security.passwordHint' | translate }}</small>
+              </div>
+
+              <div class="mb-4">
+                <label for="confirmPassword" class="form-label"
+                  >{{ 'profile.security.confirmPassword' | translate }}
+                  {{ 'profile.profileInfo.required' | translate }}</label
+                >
+                <input
+                  type="password"
+                  class="form-control"
+                  id="confirmPassword"
+                  formControlName="confirmPassword"
+                  [class.is-invalid]="
+                    getFieldError(passwordForm, 'confirmPassword') || getPasswordMismatchError()
+                  "
+                />
+                @if (getFieldError(passwordForm, 'confirmPassword')) {
+                <div class="invalid-feedback">
+                  {{ getFieldError(passwordForm, 'confirmPassword') }}
+                </div>
+                } @if (getPasswordMismatchError()) {
+                <div class="invalid-feedback">
+                  {{ 'profile.security.passwordMismatch' | translate }}
+                </div>
+                }
+              </div>
+
+              <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary" [disabled]="isChangingPassword()">
+                  @if (isChangingPassword()) {
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  }
+                  <i class="fa-solid fa-key me-2"></i>
+                  {{ 'profile.security.changePassword' | translate }}
+                </button>
+              </div>
+            </form>
+
+            <hr class="my-4" />
+
+            <!-- Danger Zone -->
+            <div class="danger-zone">
+              <h5 class="text-danger mb-3">
+                <i class="fa-solid fa-exclamation-triangle me-2"></i>
+                {{ 'profile.security.dangerZone' | translate }}
+              </h5>
+              <p class="text-muted mb-3">
+                {{ 'profile.security.dangerZoneWarning' | translate }}
+              </p>
+              <button class="btn btn-outline-danger" (click)="deleteAccount()">
+                <i class="fa-solid fa-trash me-2"></i>
+                {{ 'profile.security.deleteAccount' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+        }
+
+        <!-- Notifications Tab -->
+        @if (activeTab() === 'preferences') {
+        <div class="card settings-card">
+          <div class="card-header">
+            <h4 class="mb-0">
+              <i class="fa-solid fa-bell me-2"></i>
+              {{ 'profile.notifications.title' | translate }}
+            </h4>
+          </div>
+          <div class="card-body">
+            <p class="text-muted mb-4">{{ 'profile.notifications.subtitle' | translate }}</p>
+
+            <!-- Email Notifications -->
+            <div class="preference-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-1">{{ 'profile.notifications.email.title' | translate }}</h6>
+                  <p class="text-muted small mb-0">
+                    {{ 'profile.notifications.email.description' | translate }}
+                  </p>
+                </div>
+                <div class="form-check form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    [checked]="emailNotifications()"
+                    (change)="togglePreference('email')"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <hr />
+
+            <!-- SMS Notifications -->
+            <div class="preference-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-1">{{ 'profile.notifications.sms.title' | translate }}</h6>
+                  <p class="text-muted small mb-0">
+                    {{ 'profile.notifications.sms.description' | translate }}
+                  </p>
+                </div>
+                <div class="form-check form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    [checked]="smsNotifications()"
+                    (change)="togglePreference('sms')"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <hr />
+
+            <!-- Weekly Reports -->
+            <div class="preference-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-1">
+                    {{ 'profile.notifications.weeklyReports.title' | translate }}
+                  </h6>
+                  <p class="text-muted small mb-0">
+                    {{ 'profile.notifications.weeklyReports.description' | translate }}
+                  </p>
+                </div>
+                <div class="form-check form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    [checked]="weeklyReports()"
+                    (change)="togglePreference('weekly')"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <hr />
+
+            <!-- Appointment Reminders -->
+            <div class="preference-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-1">
+                    {{ 'profile.notifications.appointmentReminders.title' | translate }}
+                  </h6>
+                  <p class="text-muted small mb-0">
+                    {{ 'profile.notifications.appointmentReminders.description' | translate }}
+                  </p>
+                </div>
+                <div class="form-check form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    [checked]="appointmentReminders()"
+                    (change)="togglePreference('appointments')"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
