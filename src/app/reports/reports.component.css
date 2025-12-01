@@ -1,0 +1,70 @@
+.reports-page {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.hero-section {
+  min-height: 180px;
+  background: linear-gradient(135deg, #6366f1 0%, #14b8a6 100%);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.stat-box {
+  text-align: center;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.stat-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #6c757d;
+  text-transform: uppercase;
+}
+
+.report-summary {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #6366f1;
+}
+
+.progress {
+  height: 8px;
+  border-radius: 4px;
+}
+
+.card-header {
+  border-bottom: none;
+}
+
+.btn-group .btn {
+  padding: 0.5rem 1.5rem;
+}
+
+.btn-group .btn.active {
+  background-color: #6366f1;
+  border-color: #6366f1;
+  color: white;
+}
+

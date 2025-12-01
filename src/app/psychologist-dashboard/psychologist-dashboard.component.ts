@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
+import { AppointmentService } from '../services/appointment.service';
 import { API_CONFIG } from '../config/api.config';
 
 interface Appointment {
@@ -32,6 +33,7 @@ interface Patient {
 export class PsychologistDashboardComponent implements OnInit {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
+  private appointmentService = inject(AppointmentService);
 
   appointments: Appointment[] = [];
   patients: Patient[] = [];
@@ -47,9 +49,8 @@ export class PsychologistDashboardComponent implements OnInit {
     if (!currentUser) return;
 
     this.loading = true;
-    const url = `${API_CONFIG.baseUrl}/api/v1/appointments/psychologist/${currentUser.id}`;
 
-    this.http.get<Appointment[]>(url).subscribe({
+    this.appointmentService.getAppointmentsByPsychologistId(currentUser.id).subscribe({
       next: (appointments) => {
         this.appointments = appointments.sort(
           (a, b) =>
@@ -147,8 +148,7 @@ export class PsychologistDashboardComponent implements OnInit {
   }
 
   confirmAppointment(appointmentId: number) {
-    const url = `${API_CONFIG.baseUrl}/api/v1/appointments/${appointmentId}/confirm`;
-    this.http.post<Appointment>(url, {}).subscribe({
+    this.appointmentService.confirmAppointment(appointmentId).subscribe({
       next: () => {
         this.loadAppointments();
       },
@@ -159,8 +159,7 @@ export class PsychologistDashboardComponent implements OnInit {
   }
 
   startAppointment(appointmentId: number) {
-    const url = `${API_CONFIG.baseUrl}/api/v1/appointments/${appointmentId}/start`;
-    this.http.post<Appointment>(url, {}).subscribe({
+    this.appointmentService.startAppointment(appointmentId).subscribe({
       next: () => {
         this.loadAppointments();
       },
@@ -168,5 +167,20 @@ export class PsychologistDashboardComponent implements OnInit {
         console.error('Error starting appointment:', error);
       },
     });
+  }
+
+  completeAppointment(appointmentId: number) {
+    const notes = prompt('Enter session notes (optional):');
+
+    this.appointmentService
+      .completeAppointment(appointmentId, { notes: notes || undefined })
+      .subscribe({
+        next: () => {
+          this.loadAppointments();
+        },
+        error: (error) => {
+          console.error('Error completing appointment:', error);
+        },
+      });
   }
 }

@@ -70,14 +70,24 @@
             </div>
           </div>
 
-          <div class="appointment-actions" *ngIf="appointment.status === 'PENDING'">
+          <div class="appointment-actions" *ngIf="appointment.status === 'SCHEDULED'">
             <button class="btn-confirm" (click)="confirmAppointment(appointment.id)">
               <i class="fas fa-check"></i>
               Confirmar
             </button>
+          </div>
+
+          <div class="appointment-actions" *ngIf="appointment.status === 'CONFIRMED'">
             <button class="btn-start" (click)="startAppointment(appointment.id)">
               <i class="fas fa-play"></i>
               Iniciar
+            </button>
+          </div>
+
+          <div class="appointment-actions" *ngIf="appointment.status === 'IN_PROGRESS'">
+            <button class="btn-complete" (click)="completeAppointment(appointment.id)">
+              <i class="fas fa-check-circle"></i>
+              Completar
             </button>
           </div>
         </div>

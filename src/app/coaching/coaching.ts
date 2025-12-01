@@ -294,4 +294,47 @@ export class Coaching implements OnInit {
     this.closeProfileModal();
     this.openAppointmentModal(psychologist);
   }
+
+  // Cancel appointment
+  cancelAppointment(appointmentId: number): void {
+    const reason = prompt('Please provide a reason for cancellation:');
+    if (!reason) return;
+
+    this.appointmentService
+      .cancelAppointment(appointmentId, { cancellationReason: reason })
+      .subscribe({
+        next: () => {
+          console.log('Appointment cancelled successfully');
+          this.loadAppointments();
+        },
+        error: (error) => {
+          console.error('Error cancelling appointment:', error);
+          alert('Failed to cancel appointment. Please try again.');
+        },
+      });
+  }
+
+  // Reschedule appointment
+  rescheduleAppointment(appointmentId: number): void {
+    const newDate = prompt('Enter new date (YYYY-MM-DD):');
+    if (!newDate) return;
+
+    const newTime = prompt('Enter new time (HH:MM):');
+    if (!newTime) return;
+
+    const newDateTime = `${newDate}T${newTime}:00`;
+
+    this.appointmentService
+      .rescheduleAppointment(appointmentId, { appointmentDateTime: newDateTime })
+      .subscribe({
+        next: () => {
+          console.log('Appointment rescheduled successfully');
+          this.loadAppointments();
+        },
+        error: (error) => {
+          console.error('Error rescheduling appointment:', error);
+          alert('Failed to reschedule appointment. Please try again.');
+        },
+      });
+  }
 }

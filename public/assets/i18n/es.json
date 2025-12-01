@@ -538,5 +538,28 @@
         "description": "Recibir recordatorios antes de las citas programadas"
       }
     }
+  },
+  "reports": {
+    "title": "Mis Reportes",
+    "subtitle": "Visualiza tu progreso y estadísticas de salud mental",
+    "generateReport": "Generar Reporte",
+    "generating": "Generando...",
+    "noReports": "No hay reportes disponibles",
+    "noReportsDescription": "Genera tu primer reporte para ver tus estadísticas",
+    "reportType": "Tipo de Reporte",
+    "types": {
+      "monthly": "Mensual",
+      "quarterly": "Trimestral",
+      "annual": "Anual",
+      "custom": "Personalizado"
+    },
+    "stats": {
+      "totalAppointments": "Citas Totales",
+      "completedAppointments": "Completadas",
+      "totalAssessments": "Evaluaciones",
+      "averageScore": "Puntuación",
+      "progress": "Progreso"
+    },
+    "summary": "Resumen"
   }
 }
