@@ -28,16 +28,6 @@
         <li class="nav-item">
           <button
             class="nav-link"
-            [class.active]="activeTab() === 'community'"
-            (click)="setActiveTab('community')"
-          >
-            <i class="fa-solid fa-users me-2"></i>
-            {{ 'coaching.tabs.community' | translate }}
-          </button>
-        </li>
-        <li class="nav-item">
-          <button
-            class="nav-link"
             [class.active]="activeTab() === 'appointments'"
             (click)="setActiveTab('appointments')"
           >
@@ -161,107 +151,6 @@
           </div>
         </div>
         }
-      </div>
-    </div>
-  </section>
-  }
-
-  <!-- Community Tab -->
-  @if (activeTab() === 'community') {
-  <section class="py-5">
-    <div class="container">
-      <div class="row g-4">
-        <!-- Forum Section -->
-        <div class="col-lg-8">
-          <div class="card shadow-sm mb-4">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-              <h4 class="mb-0">
-                <i class="fa-solid fa-comments me-2"></i>
-                {{ 'coaching.community.forum.title' | translate }}
-              </h4>
-              <button class="btn btn-primary btn-sm">
-                <i class="fa-solid fa-plus me-2"></i>
-                {{ 'coaching.community.forum.newTopic' | translate }}
-              </button>
-            </div>
-            <div class="card-body">
-              @for (topic of forumTopics(); track topic.id) {
-              <div class="border-bottom pb-3 mb-3">
-                <h6 class="mb-2">
-                  <a href="#" class="text-decoration-none text-dark">{{ topic.title }}</a>
-                </h6>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="small text-muted">
-                    <span class="me-3"
-                      ><i class="fa-solid fa-user me-1"></i>{{ topic.author }}</span
-                    >
-                    <span class="me-3"
-                      ><i class="fa-solid fa-reply me-1"></i>{{ topic.replies }}</span
-                    >
-                    <span><i class="fa-solid fa-eye me-1"></i>{{ topic.views }}</span>
-                  </div>
-                  <small class="text-muted">{{ topic.lastActivity }}</small>
-                </div>
-              </div>
-              }
-            </div>
-          </div>
-
-          <!-- Live Chat -->
-          <div class="card shadow-sm">
-            <div class="card-header bg-white">
-              <h5 class="mb-0">
-                <i class="fa-solid fa-message me-2"></i>
-                {{ 'coaching.community.chat.title' | translate }}
-              </h5>
-              <small class="text-muted">{{
-                'coaching.community.chat.moderatedBy' | translate
-              }}</small>
-            </div>
-            <div class="card-body">
-              <div class="alert alert-info">
-                <i class="fa-solid fa-circle text-success me-2"></i>
-                <strong>24</strong> {{ 'coaching.community.chat.online' | translate }}
-              </div>
-              <button class="btn btn-success w-100">
-                <i class="fa-solid fa-comments me-2"></i>
-                {{ 'coaching.community.chat.joinChat' | translate }}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Events Sidebar -->
-        <div class="col-lg-4">
-          <div class="card shadow-sm">
-            <div class="card-header bg-white">
-              <h5 class="mb-0">
-                <i class="fa-solid fa-calendar-days me-2"></i>
-                {{ 'coaching.community.events.title' | translate }}
-              </h5>
-            </div>
-            <div class="card-body">
-              <div class="mb-3 pb-3 border-bottom">
-                <h6>Taller: Manejo de Estrés Laboral</h6>
-                <p class="small text-muted mb-2">
-                  <i class="fa-solid fa-calendar me-1"></i>15 Oct, 2025 - 6:00 PM
-                </p>
-                <button class="btn btn-sm btn-outline-primary w-100">
-                  {{ 'coaching.community.events.register' | translate }}
-                </button>
-              </div>
-              <div class="mb-3 pb-3 border-bottom">
-                <h6>Sesión de Mindfulness Grupal</h6>
-                <p class="small text-muted mb-2">
-                  <i class="fa-solid fa-calendar me-1"></i>18 Oct, 2025 - 7:00 PM
-                </p>
-                <button class="btn btn-sm btn-outline-primary w-100">
-                  {{ 'coaching.community.events.register' | translate }}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </section>

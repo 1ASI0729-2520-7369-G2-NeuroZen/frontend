@@ -28,16 +28,6 @@ interface Psychologist {
   about: string;
 }
 
-interface ForumTopic {
-  id: number;
-  title: string;
-  category: string;
-  author: string;
-  replies: number;
-  views: number;
-  lastActivity: string;
-}
-
 interface Appointment {
   id: number;
   psychologist: string;
@@ -54,41 +44,11 @@ interface Appointment {
   styleUrl: './coaching.css',
 })
 export class Coaching implements OnInit {
-  activeTab = signal<'psychologists' | 'community' | 'appointments'>('psychologists');
+  activeTab = signal<'psychologists' | 'appointments'>('psychologists');
   selectedFilter = signal('all');
   searchQuery = signal('');
 
   psychologists = signal<Psychologist[]>([]);
-
-  forumTopics = signal<ForumTopic[]>([
-    {
-      id: 1,
-      title: '¿Cómo manejan el estrés de las reuniones constantes?',
-      category: 'workStress',
-      author: 'Juan P.',
-      replies: 23,
-      views: 145,
-      lastActivity: 'Hace 2 horas',
-    },
-    {
-      id: 2,
-      title: 'Mi rutina de respiración matutina que cambió todo',
-      category: 'techniques',
-      author: 'Laura M.',
-      replies: 45,
-      views: 312,
-      lastActivity: 'Hace 5 horas',
-    },
-    {
-      id: 3,
-      title: 'Superé el burnout: mi historia',
-      category: 'success',
-      author: 'Roberto S.',
-      replies: 67,
-      views: 523,
-      lastActivity: 'Hace 1 día',
-    },
-  ]);
 
   appointments = signal<Appointment[]>([]);
 
@@ -203,7 +163,7 @@ export class Coaching implements OnInit {
     return 'upcoming';
   }
 
-  setActiveTab(tab: 'psychologists' | 'community' | 'appointments') {
+  setActiveTab(tab: 'psychologists' | 'appointments') {
     this.activeTab.set(tab);
   }
 
