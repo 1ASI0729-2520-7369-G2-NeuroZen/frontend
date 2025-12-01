@@ -1,8 +1,8 @@
 // API Configuration
-// TODO: Move to environment files when implementing production build
+// Production backend URL on Render
 
 export const API_CONFIG = {
-  baseUrl: 'http://localhost:8081',
+  baseUrl: 'https://neurozen-backend.onrender.com',
   endpoints: {
     appointments: '/api/v1/appointments',
     assessments: '/api/v1/assessments',
