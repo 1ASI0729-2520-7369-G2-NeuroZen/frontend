@@ -108,6 +108,12 @@ export class PsychologistDashboardComponent implements OnInit {
     });
   }
 
+  // Get patient name by ID
+  getPatientName(employeeId: number): string {
+    const patient = this.patients.find((p) => p.id === employeeId);
+    return patient?.name || `Paciente #${employeeId}`;
+  }
+
   setActiveTab(tab: 'appointments' | 'patients') {
     this.activeTab = tab;
   }

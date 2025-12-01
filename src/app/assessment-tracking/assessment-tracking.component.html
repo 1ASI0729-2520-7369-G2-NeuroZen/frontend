@@ -1,6 +1,6 @@
 <div class="assessment-tracking-page">
   <!-- Page Header -->
-  <div class="page-header bg-gradient-primary text-white">
+  <div class="page-header text-white">
     <div class="container py-5">
       <div class="row align-items-center">
         <div class="col-lg-8">
@@ -35,9 +35,9 @@
                 <i class="fa-solid fa-gauge-high text-primary"></i>
               </div>
               @if (latestAssessment()) {
-                <span [class]="getLevelBadgeClass(latestAssessment()!.level)">
-                  {{ 'tracking.level.' + latestAssessment()!.level | translate }}
-                </span>
+              <span [class]="getLevelBadgeClass(latestAssessment()!.level)">
+                {{ 'tracking.level.' + latestAssessment()!.level | translate }}
+              </span>
               }
             </div>
             <h3 class="stat-value mb-1">
@@ -104,24 +104,24 @@
 
     <!-- Recommendations Section -->
     @if (recommendations().length > 0) {
-      <div class="recommendations-section card border-0 shadow-sm mb-5">
-        <div class="card-body p-4">
-          <h4 class="mb-4">
-            <i class="fa-solid fa-lightbulb text-warning me-2"></i>
-            {{ 'tracking.recommendationsTitle' | translate }}
-          </h4>
-          <div class="row g-3">
-            @for (recommendation of recommendations(); track recommendation) {
-              <div class="col-md-6">
-                <div class="recommendation-item">
-                  <i class="fa-solid fa-check-circle text-success me-2"></i>
-                  <span>{{ recommendation | translate }}</span>
-                </div>
-              </div>
-            }
+    <div class="recommendations-section card border-0 shadow-sm mb-5">
+      <div class="card-body p-4">
+        <h4 class="mb-4">
+          <i class="fa-solid fa-lightbulb text-warning me-2"></i>
+          {{ 'tracking.recommendationsTitle' | translate }}
+        </h4>
+        <div class="row g-3">
+          @for (recommendation of recommendations(); track recommendation) {
+          <div class="col-md-6">
+            <div class="recommendation-item">
+              <i class="fa-solid fa-check-circle text-success me-2"></i>
+              <span>{{ recommendation | translate }}</span>
+            </div>
           </div>
+          }
         </div>
       </div>
+    </div>
     }
 
     <!-- Charts Section -->
@@ -135,14 +135,14 @@
               {{ 'tracking.trendChart' | translate }}
             </h5>
             @if (trendChartData()) {
-              <div class="chart-container">
-                <canvas id="trendChart"></canvas>
-              </div>
+            <div class="chart-container">
+              <canvas id="trendChart"></canvas>
+            </div>
             } @else {
-              <div class="text-center text-muted py-5">
-                <i class="fa-solid fa-chart-line fa-3x mb-3 opacity-25"></i>
-                <p>{{ 'tracking.noChartData' | translate }}</p>
-              </div>
+            <div class="text-center text-muted py-5">
+              <i class="fa-solid fa-chart-line fa-3x mb-3 opacity-25"></i>
+              <p>{{ 'tracking.noChartData' | translate }}</p>
+            </div>
             }
           </div>
         </div>
@@ -157,14 +157,14 @@
               {{ 'tracking.categoryChart' | translate }}
             </h5>
             @if (categoryChartData()) {
-              <div class="chart-container">
-                <canvas id="categoryChart"></canvas>
-              </div>
+            <div class="chart-container">
+              <canvas id="categoryChart"></canvas>
+            </div>
             } @else {
-              <div class="text-center text-muted py-5">
-                <i class="fa-solid fa-chart-pie fa-3x mb-3 opacity-25"></i>
-                <p>{{ 'tracking.noChartData' | translate }}</p>
-              </div>
+            <div class="text-center text-muted py-5">
+              <i class="fa-solid fa-chart-pie fa-3x mb-3 opacity-25"></i>
+              <p>{{ 'tracking.noChartData' | translate }}</p>
+            </div>
             }
           </div>
         </div>
@@ -179,7 +179,7 @@
             <i class="fa-solid fa-clock-rotate-left me-2"></i>
             {{ 'tracking.historyTitle' | translate }}
           </h4>
-          
+
           <!-- Date Range Filter -->
           <div class="btn-group" role="group">
             <button
@@ -223,59 +223,75 @@
 
         <!-- History Table -->
         @if (assessments().length > 0) {
-          <div class="table-responsive">
-            <table class="table table-hover align-middle">
-              <thead class="table-light">
-                <tr>
-                  <th>{{ 'tracking.table.date' | translate }}</th>
-                  <th>{{ 'tracking.table.score' | translate }}</th>
-                  <th>{{ 'tracking.table.level' | translate }}</th>
-                  <th>{{ 'tracking.table.categories' | translate }}</th>
-                  <th class="text-end">{{ 'tracking.table.actions' | translate }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (assessment of assessments(); track assessment.id) {
-                  <tr class="assessment-row" (click)="viewAssessmentDetails(assessment)">
-                    <td>
-                      <i class="fa-solid fa-calendar me-2 text-muted"></i>
-                      {{ formatDate(assessment.timestamp) }}
-                    </td>
-                    <td>
-                      <strong class="fs-5">{{ assessment.score }}</strong>
-                    </td>
-                    <td>
-                      <span [class]="getLevelBadgeClass(assessment.level)">
-                        {{ 'tracking.level.' + assessment.level | translate }}
-                      </span>
-                    </td>
-                    <td>
-                      <div class="category-mini-bars">
-                        <div class="mini-bar" [style.width.%]="assessment.categoryScores.work" title="Trabajo"></div>
-                        <div class="mini-bar" [style.width.%]="assessment.categoryScores.sleep" title="Sueño"></div>
-                        <div class="mini-bar" [style.width.%]="assessment.categoryScores.physical" title="Físico"></div>
-                        <div class="mini-bar" [style.width.%]="assessment.categoryScores.emotional" title="Emocional"></div>
-                      </div>
-                    </td>
-                    <td class="text-end">
-                      <button
-                        class="btn btn-sm btn-outline-danger"
-                        (click)="deleteAssessment(assessment.id, $event)"
-                        title="Eliminar"
-                      >
-                        <i class="fa-solid fa-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>{{ 'tracking.table.date' | translate }}</th>
+                <th>{{ 'tracking.table.score' | translate }}</th>
+                <th>{{ 'tracking.table.level' | translate }}</th>
+                <th>{{ 'tracking.table.categories' | translate }}</th>
+                <th class="text-end">{{ 'tracking.table.actions' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (assessment of assessments(); track assessment.id) {
+              <tr class="assessment-row" (click)="viewAssessmentDetails(assessment)">
+                <td>
+                  <i class="fa-solid fa-calendar me-2 text-muted"></i>
+                  {{ formatDate(assessment.timestamp) }}
+                </td>
+                <td>
+                  <strong class="fs-5">{{ assessment.score }}</strong>
+                </td>
+                <td>
+                  <span [class]="getLevelBadgeClass(assessment.level)">
+                    {{ 'tracking.level.' + assessment.level | translate }}
+                  </span>
+                </td>
+                <td>
+                  <div class="category-mini-bars">
+                    <div
+                      class="mini-bar"
+                      [style.width.%]="assessment.categoryScores.work"
+                      title="Trabajo"
+                    ></div>
+                    <div
+                      class="mini-bar"
+                      [style.width.%]="assessment.categoryScores.sleep"
+                      title="Sueño"
+                    ></div>
+                    <div
+                      class="mini-bar"
+                      [style.width.%]="assessment.categoryScores.physical"
+                      title="Físico"
+                    ></div>
+                    <div
+                      class="mini-bar"
+                      [style.width.%]="assessment.categoryScores.emotional"
+                      title="Emocional"
+                    ></div>
+                  </div>
+                </td>
+                <td class="text-end">
+                  <button
+                    class="btn btn-sm btn-outline-danger"
+                    (click)="deleteAssessment(assessment.id, $event)"
+                    title="Eliminar"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
         } @else {
-          <div class="text-center text-muted py-5">
-            <i class="fa-solid fa-inbox fa-3x mb-3 opacity-25"></i>
-            <p class="mb-0">{{ 'tracking.noHistory' | translate }}</p>
-          </div>
+        <div class="text-center text-muted py-5">
+          <i class="fa-solid fa-inbox fa-3x mb-3 opacity-25"></i>
+          <p class="mb-0">{{ 'tracking.noHistory' | translate }}</p>
+        </div>
         }
       </div>
     </div>
@@ -287,7 +303,7 @@
           <i class="fa-solid fa-bell me-2"></i>
           {{ 'tracking.reminderTitle' | translate }}
         </h4>
-        
+
         <div class="row align-items-center">
           <div class="col-md-8">
             <p class="text-muted mb-3 mb-md-0">
@@ -308,9 +324,8 @@
 
 <!-- Stress Assessment Modal -->
 @if (showStressAssessmentModal()) {
-  <app-stress-assessment-modal
-    (close)="onAssessmentClose()"
-    (completed)="onAssessmentCompleted($event)"
-  ></app-stress-assessment-modal>
+<app-stress-assessment-modal
+  (close)="onAssessmentClose()"
+  (completed)="onAssessmentCompleted($event)"
+></app-stress-assessment-modal>
 }
-

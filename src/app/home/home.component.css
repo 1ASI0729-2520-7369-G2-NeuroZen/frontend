@@ -4,6 +4,9 @@
   border-bottom: 2px solid var(--primary-200);
   position: relative;
   overflow: hidden;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
 }
 
 .welcome-section::before {

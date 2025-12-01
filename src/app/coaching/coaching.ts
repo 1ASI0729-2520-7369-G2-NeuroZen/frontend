@@ -62,7 +62,6 @@ export class Coaching implements OnInit {
 
   ngOnInit(): void {
     this.loadPsychologists();
-    this.loadAppointments();
   }
 
   loadPsychologists(): void {
@@ -104,6 +103,9 @@ export class Coaching implements OnInit {
         });
 
         this.psychologists.set(uiPsychologists);
+
+        // Load appointments AFTER psychologists are loaded
+        this.loadAppointments();
       },
       error: (error) => {
         console.error('Failed to load psychologists:', error);
@@ -113,7 +115,7 @@ export class Coaching implements OnInit {
 
   loadAppointments(): void {
     // Get current user from localStorage
-    const userData = localStorage.getItem('neurozen_user');
+    const userData = localStorage.getItem('currentUser');
     if (!userData) {
       console.error('User not logged in');
       return;

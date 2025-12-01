@@ -6,10 +6,13 @@
 
 /* Page Header */
 .page-header {
-  background: var(--bg-gradient-primary);
+  background: linear-gradient(135deg, #6366f1 0%, #14b8a6 100%) !important;
   color: white;
   position: relative;
   overflow: hidden;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
 }
 
 .page-header::before {

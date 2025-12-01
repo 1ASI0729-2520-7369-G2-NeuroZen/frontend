@@ -154,68 +154,69 @@
             </div>
           </div>
 
-          <!-- Navigation Cards Section -->
-          <div class="navigation-section">
-            <h5 class="mb-4">
-              <i class="fa-solid fa-compass me-2"></i>
-              {{ 'home.navigation.title' | translate }}
-            </h5>
-            <div class="row g-4">
-              @for (card of navigationCards(); track card.id) {
-              <div class="col-md-4">
-                <a [routerLink]="card.route" class="text-decoration-none">
-                  <div class="navigation-card" [style.border-left-color]="card.color">
-                    <div class="nav-card-icon" [style.color]="card.color">
-                      <i class="fa-solid {{ card.icon }}"></i>
-                    </div>
-                    <h6 class="nav-card-title">{{ card.title | translate }}</h6>
-                    <p class="nav-card-description text-muted">
-                      {{ card.description | translate }}
-                    </p>
-                    <div class="nav-card-arrow">
-                      <i class="fa-solid fa-arrow-right"></i>
-                    </div>
-                  </div>
+          <!-- Upcoming Appointments Section -->
+          <div class="card shadow-sm">
+            <div class="card-header bg-white">
+              <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                  <i class="fa-solid fa-calendar-check me-2"></i>
+                  {{ 'home.sidebar.upcomingAppointments' | translate }}
+                </h5>
+                <a href="/coaching" class="btn btn-sm btn-outline-primary">
+                  {{ 'home.sidebar.viewAll' | translate }}
+                  <i class="fa-solid fa-arrow-right ms-1"></i>
                 </a>
               </div>
-              }
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="appointment-item p-3 border rounded">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <div>
+                        <h6 class="mb-1">Dra. María González</h6>
+                        <small class="text-muted">
+                          <i class="fa-solid fa-calendar me-1"></i>
+                          Oct 15, 2025 - 3:00 PM
+                        </small>
+                      </div>
+                    </div>
+                    <button class="btn btn-sm btn-primary w-100 mt-2">
+                      <i class="fa-solid fa-video me-1"></i>
+                      {{ 'home.sidebar.joinSession' | translate }}
+                    </button>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="appointment-item p-3 border rounded">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <div>
+                        <h6 class="mb-1">Dr. Carlos Ruiz</h6>
+                        <small class="text-muted">
+                          <i class="fa-solid fa-calendar me-1"></i>
+                          Oct 18, 2025 - 10:00 AM
+                        </small>
+                      </div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary w-100 mt-2">
+                      <i class="fa-solid fa-calendar-days me-1"></i>
+                      {{ 'coaching.appointments.reschedule' | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="text-center mt-3">
+                <button class="btn btn-outline-primary" (click)="bookSession()">
+                  <i class="fa-solid fa-calendar-plus me-2"></i>
+                  {{ 'home.welcome.bookSession' | translate }}
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Right Column: Sidebar -->
         <div class="col-lg-4">
-          <!-- Upcoming Appointments -->
-          <div class="card shadow-sm mb-4">
-            <div class="card-header bg-white">
-              <h6 class="mb-0">
-                <i class="fa-solid fa-calendar-check me-2"></i>
-                {{ 'home.sidebar.upcomingAppointments' | translate }}
-              </h6>
-            </div>
-            <div class="card-body">
-              <div class="appointment-item mb-3 pb-3 border-bottom">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                  <div>
-                    <h6 class="mb-1">Dra. María González</h6>
-                    <small class="text-muted">
-                      <i class="fa-solid fa-calendar me-1"></i>
-                      Oct 15, 2025 - 3:00 PM
-                    </small>
-                  </div>
-                </div>
-                <button class="btn btn-sm btn-outline-primary w-100">
-                  <i class="fa-solid fa-video me-1"></i>
-                  {{ 'home.sidebar.joinSession' | translate }}
-                </button>
-              </div>
-              <a href="/coaching" class="btn btn-sm btn-link w-100">
-                {{ 'home.sidebar.viewAll' | translate }}
-                <i class="fa-solid fa-arrow-right ms-1"></i>
-              </a>
-            </div>
-          </div>
-
           <!-- Wellness Tips -->
           <div class="card shadow-sm mb-4">
             <div class="card-header bg-white">

@@ -5,17 +5,19 @@
   </div>
 
   <div class="tabs">
-    <button 
-      class="tab-button" 
+    <button
+      class="tab-button"
       [class.active]="activeTab === 'appointments'"
-      (click)="setActiveTab('appointments')">
+      (click)="setActiveTab('appointments')"
+    >
       <i class="fas fa-calendar-check"></i>
       Mis Citas
     </button>
-    <button 
-      class="tab-button" 
+    <button
+      class="tab-button"
       [class.active]="activeTab === 'patients'"
-      (click)="setActiveTab('patients')">
+      (click)="setActiveTab('patients')"
+    >
       <i class="fas fa-users"></i>
       Mis Pacientes
     </button>
@@ -49,7 +51,7 @@
           <div class="appointment-body">
             <div class="patient-info">
               <i class="fas fa-user"></i>
-              <span>Paciente ID: {{ appointment.employeeId }}</span>
+              <span>{{ getPatientName(appointment.employeeId) }}</span>
             </div>
 
             <div class="appointment-id">
@@ -126,4 +128,3 @@
     <p>Cargando datos...</p>
   </div>
 </div>
-

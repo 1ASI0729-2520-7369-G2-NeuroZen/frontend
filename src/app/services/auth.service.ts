@@ -52,7 +52,7 @@ export class AuthService {
    * @param credentials Login credentials
    * @returns Observable with authentication response
    */
-  login(credentials: LoginCredentials): Observable<AuthenticationResponse | null> {
+  login(credentials: LoginCredentials): Observable<AuthenticationResponse> {
     return this.http.post<AuthenticationResponse>(`${this.API_URL}/login`, credentials).pipe(
       tap((response) => {
         if (response) {
@@ -66,11 +66,8 @@ export class AuthService {
           localStorage.setItem('currentUser', JSON.stringify(userData));
           localStorage.setItem('authToken', response.token);
         }
-      }),
-      catchError((error) => {
-        console.error('Login failed:', error);
-        return of(null);
       })
+      // Removed catchError - let errors propagate to component for proper handling
     );
   }
 
@@ -79,7 +76,7 @@ export class AuthService {
    * @param credentials Registration credentials
    * @returns Observable with authentication response
    */
-  register(credentials: RegisterCredentials): Observable<AuthenticationResponse | null> {
+  register(credentials: RegisterCredentials): Observable<AuthenticationResponse> {
     return this.http.post<AuthenticationResponse>(`${this.API_URL}/register`, credentials).pipe(
       tap((response) => {
         if (response) {
@@ -93,11 +90,8 @@ export class AuthService {
           localStorage.setItem('currentUser', JSON.stringify(userData));
           localStorage.setItem('authToken', response.token);
         }
-      }),
-      catchError((error) => {
-        console.error('Registration failed:', error);
-        return of(null);
       })
+      // Removed catchError - let errors propagate to component for proper handling
     );
   }
 

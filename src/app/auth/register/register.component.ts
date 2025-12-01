@@ -53,23 +53,25 @@ export class RegisterComponent {
       this.authService.register(credentials).subscribe({
         next: (response) => {
           this.isLoading = false;
-          if (response) {
-            this.router.navigate(['/home']);
-          } else {
-            this.errorMessage = 'El email ya está registrado';
-          }
+          // Registration successful - redirect to home
+          this.router.navigate(['/home']);
         },
         error: (error) => {
           this.isLoading = false;
+          console.error('Registration error:', error);
+
           // Check if backend returned a specific error message
           if (error.status === 409 && error.error?.message) {
             this.errorMessage = error.error.message;
           } else if (error.status === 409) {
             this.errorMessage = 'El email ya está registrado';
+          } else if (error.status === 0) {
+            // Network error or CORS issue
+            this.errorMessage =
+              'No se puede conectar al servidor. Por favor, verifica tu conexión.';
           } else {
             this.errorMessage = 'Error al registrarse. Por favor, intenta de nuevo.';
           }
-          console.error('Registration error:', error);
         },
       });
     } else {

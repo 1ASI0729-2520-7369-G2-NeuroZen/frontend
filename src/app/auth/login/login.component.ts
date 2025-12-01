@@ -33,21 +33,27 @@ export class LoginComponent {
       this.authService.login(credentials).subscribe({
         next: (response) => {
           this.isLoading = false;
-          if (response) {
-            // Redirect based on user role
-            if (response.role === 'PSYCHOLOGIST') {
-              this.router.navigate(['/psychologist-dashboard']);
-            } else {
-              this.router.navigate(['/home']);
-            }
+          // Login successful - redirect based on user role
+          if (response.role === 'PSYCHOLOGIST') {
+            this.router.navigate(['/psychologist-dashboard']);
           } else {
-            this.errorMessage = 'Email o contraseña incorrectos';
+            this.router.navigate(['/home']);
           }
         },
         error: (error) => {
           this.isLoading = false;
-          this.errorMessage = 'Error al iniciar sesión. Por favor, intenta de nuevo.';
           console.error('Login error:', error);
+
+          // Handle different error types
+          if (error.status === 401) {
+            this.errorMessage = 'Email o contraseña incorrectos';
+          } else if (error.status === 0) {
+            // Network error or CORS issue
+            this.errorMessage =
+              'No se puede conectar al servidor. Por favor, verifica tu conexión.';
+          } else {
+            this.errorMessage = 'Error al iniciar sesión. Por favor, intenta de nuevo.';
+          }
         },
       });
     } else {
