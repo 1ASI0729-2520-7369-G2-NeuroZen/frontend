@@ -190,6 +190,14 @@
       "languages": "Idiomas",
       "nextAvailable": "Próxima disponibilidad"
     },
+    "profile": {
+      "specialties": "Especialidades",
+      "about": "Acerca de",
+      "years": "años",
+      "experience": "Experiencia",
+      "languages": "Idiomas",
+      "close": "Cerrar"
+    },
     "community": {
       "title": "Comunidad de apoyo",
       "description": "Comparte experiencias, encuentra motivación y aprende de otros en tu camino hacia el bienestar.",

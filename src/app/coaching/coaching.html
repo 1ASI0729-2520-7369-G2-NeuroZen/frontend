@@ -89,8 +89,12 @@
 
       <!-- Psychologists Grid -->
       <div class="row g-4">
-        @for (psychologist of filteredPsychologists; track psychologist.id) {
-        <div class="col-md-6 col-lg-4">
+        @for (psychologist of psychologists(); track psychologist.id) {
+        <div
+          class="col-md-6 col-lg-4 psychologist-card"
+          [attr.data-specialties]="getSpecialtyTags(psychologist)"
+          [class.d-none]="!matchesFilter(psychologist)"
+        >
           <div class="card h-100 shadow-sm hover-lift">
             <div class="card-body">
               <div class="d-flex align-items-start gap-3 mb-3">
@@ -143,7 +147,7 @@
                   <i class="fa-solid fa-calendar-plus me-2"></i>
                   {{ 'coaching.psychologists.bookAppointment' | translate }}
                 </button>
-                <button class="btn btn-outline-secondary">
+                <button class="btn btn-outline-secondary" (click)="openProfileModal(psychologist)">
                   {{ 'coaching.psychologists.viewProfile' | translate }}
                 </button>
               </div>
@@ -241,4 +245,10 @@
   (close)="closeAppointmentModal()"
   (created)="onAppointmentCreated($event)"
 ></app-create-appointment-modal>
+} @if (showProfileModal() && selectedPsychologistForProfile()) {
+<app-psychologist-profile-modal
+  [psychologist]="selectedPsychologistForProfile()!"
+  (close)="closeProfileModal()"
+  (bookAppointment)="onBookFromProfile($event)"
+></app-psychologist-profile-modal>
 }

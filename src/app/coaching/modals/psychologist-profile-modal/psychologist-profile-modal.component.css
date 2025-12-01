@@ -1,0 +1,156 @@
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.modal-dialog {
+  max-width: 500px;
+  width: 90%;
+  margin: 1rem;
+  animation: slideUp 0.3s ease-out;
+}
+
+.modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  background-color: #ffffff;
+}
+
+.modal-header {
+  padding: 1rem 1.5rem 0.5rem;
+  background-color: #ffffff;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.btn-close {
+  padding: 0.5rem;
+  margin: 0;
+}
+
+.modal-body {
+  padding: 0 1.5rem 1rem;
+  max-height: 70vh;
+  overflow-y: auto;
+  background-color: #ffffff;
+}
+
+.modal-footer {
+  padding: 1rem 1.5rem 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  background-color: #ffffff;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.modal-footer .btn {
+  flex: 1;
+}
+
+/* Star Icon Styling */
+.text-warning i.fa-star {
+  color: #ffc107;
+}
+
+.fa-solid.fa-star::before {
+  content: "\f005";
+}
+
+/* Profile Image */
+.profile-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border: 4px solid #f8f9fa;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Info Cards */
+.info-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.info-card i {
+  font-size: 1.5rem;
+  display: block;
+}
+
+/* Availability Card */
+.availability-card {
+  background: linear-gradient(135deg, #f0f4ff 0%, #f0fdfa 100%);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #e0e9ff;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Scrollbar Styling */
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .modal-dialog {
+    width: 95%;
+    margin: 0.5rem;
+  }
+
+  .profile-image {
+    width: 80px;
+    height: 80px;
+  }
+
+  .modal-body {
+    max-height: 60vh;
+  }
+}
+

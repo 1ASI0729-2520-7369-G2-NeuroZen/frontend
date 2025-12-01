@@ -190,6 +190,14 @@
       "languages": "Languages",
       "nextAvailable": "Next available"
     },
+    "profile": {
+      "specialties": "Specialties",
+      "about": "About",
+      "years": "years",
+      "experience": "Experience",
+      "languages": "Languages",
+      "close": "Close"
+    },
     "community": {
       "title": "Support community",
       "description": "Share experiences, find motivation, and learn from others on your wellness journey.",

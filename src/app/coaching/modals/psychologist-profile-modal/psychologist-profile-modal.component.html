@@ -1,0 +1,99 @@
+<div class="modal-backdrop" (click)="onBackdropClick($event)">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header border-0">
+        <button type="button" class="btn-close" (click)="onClose()"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body pt-0">
+        <!-- Psychologist Header -->
+        <div class="text-center mb-4">
+          <img
+            [src]="psychologist.image"
+            [alt]="psychologist.name"
+            class="profile-image rounded-circle mb-3"
+          />
+          <h4 class="mb-1">{{ psychologist.name }}</h4>
+          <p class="text-muted mb-2">{{ psychologist.specialty }}</p>
+          <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
+            <div class="text-warning">
+              <i class="fa-solid fa-star"></i>
+              <span class="text-dark ms-1 fw-bold">{{ psychologist.rating }}</span>
+            </div>
+            <span class="text-muted">
+              ({{ psychologist.reviews }} {{ 'coaching.psychologists.reviews' | translate }})
+            </span>
+          </div>
+        </div>
+
+        <!-- Specialties -->
+        <div class="mb-4">
+          <h6 class="fw-bold mb-2">
+            <i class="fa-solid fa-briefcase me-2 text-primary"></i>
+            {{ 'coaching.profile.specialties' | translate }}
+          </h6>
+          <div class="d-flex flex-wrap gap-2">
+            @for (specialty of psychologist.specialties; track specialty) {
+            <span class="badge bg-light text-dark">{{ specialty }}</span>
+            }
+          </div>
+        </div>
+
+        <!-- About -->
+        <div class="mb-4">
+          <h6 class="fw-bold mb-2">
+            <i class="fa-solid fa-user me-2 text-primary"></i>
+            {{ 'coaching.profile.about' | translate }}
+          </h6>
+          <p class="text-muted mb-0">{{ psychologist.about }}</p>
+        </div>
+
+        <!-- Experience & Languages -->
+        <div class="row mb-4">
+          <div class="col-6">
+            <div class="info-card">
+              <i class="fa-solid fa-award text-primary mb-2"></i>
+              <div class="fw-bold">{{ psychologist.experience }} {{ 'coaching.profile.years' | translate }}</div>
+              <small class="text-muted">{{ 'coaching.profile.experience' | translate }}</small>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="info-card">
+              <i class="fa-solid fa-language text-primary mb-2"></i>
+              <div class="fw-bold">{{ psychologist.languages.join(', ') }}</div>
+              <small class="text-muted">{{ 'coaching.profile.languages' | translate }}</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Availability & Price -->
+        <div class="availability-card mb-4">
+          <div class="row align-items-center">
+            <div class="col-7">
+              <small class="text-muted d-block">{{ 'coaching.psychologists.nextAvailable' | translate }}</small>
+              <strong>{{ psychologist.nextAvailable }}</strong>
+            </div>
+            <div class="col-5 text-end">
+              <div class="h4 mb-0 text-primary">${{ psychologist.price }}</div>
+              <small class="text-muted">/{{ 'coaching.psychologists.session' | translate }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-outline-secondary" (click)="onClose()">
+          {{ 'coaching.profile.close' | translate }}
+        </button>
+        <button type="button" class="btn btn-primary" (click)="onBookAppointment()">
+          <i class="fa-solid fa-calendar-plus me-2"></i>
+          {{ 'coaching.psychologists.bookAppointment' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

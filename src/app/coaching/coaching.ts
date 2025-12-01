@@ -6,6 +6,7 @@ import {
   CreateAppointmentModalComponent,
   AppointmentData,
 } from '../home/modals/create-appointment-modal/create-appointment-modal.component';
+import { PsychologistProfileModalComponent } from './modals/psychologist-profile-modal/psychologist-profile-modal.component';
 import { AppointmentService } from '../services/appointment.service';
 import { Appointment as BackendAppointment } from '../models/appointment.model';
 import {
@@ -39,7 +40,13 @@ interface Appointment {
 
 @Component({
   selector: 'app-coaching',
-  imports: [TranslateModule, CommonModule, FormsModule, CreateAppointmentModalComponent],
+  imports: [
+    TranslateModule,
+    CommonModule,
+    FormsModule,
+    CreateAppointmentModalComponent,
+    PsychologistProfileModalComponent,
+  ],
   templateUrl: './coaching.html',
   styleUrl: './coaching.css',
 })
@@ -54,6 +61,9 @@ export class Coaching implements OnInit {
 
   showAppointmentModal = signal(false);
   selectedPsychologistForBooking = signal<Psychologist | null>(null);
+
+  showProfileModal = signal(false);
+  selectedPsychologistForProfile = signal<Psychologist | null>(null);
 
   constructor(
     private appointmentService: AppointmentService,
@@ -77,6 +87,7 @@ export class Coaching implements OnInit {
             'Dr. Carlos Ruiz': 'Mindfulness',
             'Dra. Ana Martínez': 'Burnout',
             'Dr. Sarah Martinez': 'Ansiedad',
+            'Dr. David Chen': 'Ansiedad',
           };
 
           const specialtiesMap: { [key: string]: string[] } = {
@@ -84,6 +95,7 @@ export class Coaching implements OnInit {
             'Dr. Carlos Ruiz': ['Mindfulness', 'Meditación', 'Ansiedad'],
             'Dra. Ana Martínez': ['Burnout', 'Estrés laboral', 'Resiliencia'],
             'Dr. Sarah Martinez': ['Ansiedad', 'Depresión', 'Terapia Cognitiva'],
+            'Dr. David Chen': ['Ansiedad', 'Mindfulness', 'Terapia Cognitiva'],
           };
 
           return {
@@ -170,7 +182,16 @@ export class Coaching implements OnInit {
   }
 
   setFilter(filter: string) {
+    console.log('Setting filter to:', filter);
     this.selectedFilter.set(filter);
+    console.log('Current filter:', this.selectedFilter());
+    console.log('Total psychologists:', this.psychologists().length);
+
+    // Log which psychologists match
+    this.psychologists().forEach((p) => {
+      const matches = this.matchesFilter(p);
+      console.log(`${p.name} - Specialties: ${p.specialties.join(', ')} - Matches: ${matches}`);
+    });
   }
 
   openAppointmentModal(psychologist?: Psychologist) {
@@ -198,21 +219,57 @@ export class Coaching implements OnInit {
     this.appointments.update((apps) => [...apps, newAppointment]);
   }
 
-  get filteredPsychologists() {
+  // Method to check if psychologist matches current filter AND search query
+  matchesFilter(psychologist: Psychologist): boolean {
     const filter = this.selectedFilter();
-    const query = this.searchQuery().toLowerCase();
+    const query = this.searchQuery().toLowerCase().trim();
 
-    return this.psychologists().filter((p) => {
-      const matchesFilter =
-        filter === 'all' ||
-        p.specialties.some((s) => s.toLowerCase().includes(filter.toLowerCase()));
-      const matchesSearch =
-        query === '' ||
-        p.name.toLowerCase().includes(query) ||
-        p.specialty.toLowerCase().includes(query);
-
-      return matchesFilter && matchesSearch;
+    console.log(`Checking ${psychologist.name}:`, {
+      filter,
+      query,
+      specialties: psychologist.specialties,
     });
+
+    // Check filter match
+    let matchesFilterCriteria = true;
+    if (filter !== 'all') {
+      // Map filter keys to Spanish specialty names (case-insensitive)
+      const filterMap: { [key: string]: string[] } = {
+        workStress: ['estrés laboral', 'estres laboral', 'burnout'],
+        anxiety: ['ansiedad'],
+        burnout: ['burnout'],
+        mindfulness: ['mindfulness', 'meditación', 'meditacion'],
+      };
+
+      if (filterMap[filter]) {
+        matchesFilterCriteria = psychologist.specialties.some((s) => {
+          const specialty = s.toLowerCase();
+          const matches = filterMap[filter].some((f) => specialty.includes(f));
+          console.log(`  Specialty "${s}" (${specialty}) matches filter "${filter}":`, matches);
+          return matches;
+        });
+        console.log(`  Overall filter match:`, matchesFilterCriteria);
+      }
+    }
+
+    // Check search query match
+    let matchesSearchQuery = true;
+    if (query !== '') {
+      matchesSearchQuery =
+        psychologist.name.toLowerCase().includes(query) ||
+        psychologist.specialty.toLowerCase().includes(query) ||
+        psychologist.specialties.some((s) => s.toLowerCase().includes(query));
+      console.log(`  Search query match:`, matchesSearchQuery);
+    }
+
+    const finalResult = matchesFilterCriteria && matchesSearchQuery;
+    console.log(`  Final result for ${psychologist.name}:`, finalResult);
+    return finalResult;
+  }
+
+  // Get specialty tags for data attribute
+  getSpecialtyTags(psychologist: Psychologist): string {
+    return psychologist.specialties.map((s) => s.toLowerCase()).join(',');
   }
 
   get upcomingAppointments() {
@@ -221,5 +278,20 @@ export class Coaching implements OnInit {
 
   get pastAppointments() {
     return this.appointments().filter((a) => a.status === 'past');
+  }
+
+  openProfileModal(psychologist: Psychologist): void {
+    this.selectedPsychologistForProfile.set(psychologist);
+    this.showProfileModal.set(true);
+  }
+
+  closeProfileModal(): void {
+    this.showProfileModal.set(false);
+    this.selectedPsychologistForProfile.set(null);
+  }
+
+  onBookFromProfile(psychologist: Psychologist): void {
+    this.closeProfileModal();
+    this.openAppointmentModal(psychologist);
   }
 }
